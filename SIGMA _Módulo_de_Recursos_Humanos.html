@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIGMA · Recursos Humanos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================
+   1. TOKENS (design.md · Quick Start, CSS Custom Properties)
+   ========================================================== */
+:root {
+  --color-stone-canvas: #fafaf9;
+  --color-pure-white: #ffffff;
+  --color-stone-border: #e8e6e5;
+  --color-stone-muted: #d6d3d1;
+  --color-ash-gray: #a8a29e;
+  --color-warm-gray: #78716c;
+  --color-ink-black: #0c0a09;
+  --color-soot: #1c1917;
+  --color-sky-wash: #c1e1f7;
+  --color-cyan-signal: #3ba6f1;
+  --color-cyan-edge: #3398e1;
+
+  --font-roobert: 'Inter Tight', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --shadow-md: rgba(0, 0, 0, 0.05) 0px 4px 16px 0px;
+  --shadow-subtle: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
+  --shadow-xl: rgba(17, 12, 46, 0.12) 0px 12px 45px 0px;
+
+  --page-max-width: 1200px;
+  --section-gap: 96px;
+  --card-padding: 24px;
+  --element-gap: 8px;
+}
+
+/* ==========================================================
+   2. BASE
+   ========================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-padding-top: 80px; }
+body {
+  margin: 0;
+  background: var(--color-stone-canvas);
+  color: var(--color-warm-gray);
+  font-family: var(--font-inter);
+  font-size: 14px;
+  line-height: 1.64;
+  letter-spacing: 0.004em;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 {
+  font-family: var(--font-roobert);
+  font-weight: 400;
+  color: var(--color-ink-black);
+  margin: 0;
+}
+h1 { font-size: 32px; line-height: 1.12; letter-spacing: -0.025em; }
+h2 { font-size: 32px; line-height: 1.25; letter-spacing: -0.025em; }
+h3 { font-size: 20px; line-height: 1.2; letter-spacing: -0.1px; }
+p { margin: 0; }
+button, input, select { font: inherit; }
+:focus-visible { outline: 2px solid var(--color-cyan-signal); outline-offset: 2px; }
+
+/* The single highlight span allowed per headline (design.md · Highlighted Text Span) */
+.hl {
+  color: var(--color-cyan-edge);
+  background: var(--color-sky-wash);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+/* ==========================================================
+   3. LAYOUT
+   ========================================================== */
+.container {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-24, 24px);
+}
+.section { padding-block: 0; }
+.section + .section { margin-top: var(--section-gap); }
+
+/* ==========================================================
+   4. TOP NAV (minimal bar: logo left, centered links, actions right)
+   ========================================================== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-pure-white);
+  border-bottom: 1px solid var(--color-stone-border);
+}
+.topbar__inner {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+}
+.logo {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--color-ink-black); font-weight: 500; font-size: 14px;
+  text-decoration: none;
+}
+.logo svg { width: 18px; height: 18px; stroke: var(--color-ink-black); fill: none; stroke-width: 1; }
+.nav-links { display: flex; gap: 0; list-style: none; margin: 0; padding: 0; }
+.nav-links a {
+  display: inline-flex; align-items: center;
+  height: 32px; padding: 0 12px;
+  color: var(--color-warm-gray); text-decoration: none; font-size: 14px;
+  transition: color .15s ease;
+}
+.nav-links a:hover { color: var(--color-ink-black); }
+.nav-links a[aria-current="page"] { color: var(--color-ink-black); }
+.topbar__actions { display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+
+/* ==========================================================
+   5. BUTTONS (pill, 8px 16px) — one cyan filled CTA per viewport
+   ========================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 16px; border-radius: 9999px;
+  font-size: 14px; font-weight: 500; line-height: 1.33;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  border: 1px solid transparent;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.btn--primary {
+  background: var(--color-cyan-signal);
+  border-color: var(--color-cyan-edge);
+  color: var(--color-pure-white);
+}
+.btn--primary:hover { background: var(--color-cyan-edge); }
+.btn--ghost {
+  background: transparent;
+  border-color: var(--color-stone-border);
+  color: var(--color-ink-black);
+  font-weight: 400;
+}
+.btn--ghost:hover { border-color: var(--color-stone-muted); }
+.btn--small { padding: 4px 12px; font-size: 13px; }
+
+/* ==========================================================
+   6. HERO
+   ========================================================== */
+.hero { padding-top: 64px; }
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+.hero__lead { max-width: 640px; }
+.hero__lead p { margin-top: 16px; font-size: 16px; line-height: 1.69; letter-spacing: 0.048px; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+
+/* Floating preview card: the one element per page allowed the deep shadow */
+.preview {
+  background: var(--color-pure-white);
+  border-radius: 16px;
+  box-shadow: var(--shadow-xl);
+  padding: 8px;
+  margin-top: 48px;
+}
+.preview__inner {
+  border: 1px solid var(--color-stone-border);
+  border-radius: 10px;
+  padding: var(--card-padding);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.stat__label { font-size: 13px; color: var(--color-warm-gray); }
+.stat__value {
+  font-family: var(--font-roobert); font-size: 32px; line-height: 1.25;
+  letter-spacing: -0.025em; color: var(--color-ink-black); margin-top: 4px;
+}
+.stat__note { font-size: 12px; color: var(--color-ash-gray); margin-top: 4px; }
+
+/* ==========================================================
+   7. TAB PILL GROUP (submodule navigation)
+   ========================================================== */
+.tabs {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 64px;
+  padding-bottom: 0;
+}
+.tab {
+  padding: 8px 16px; border-radius: 9999px;
+  border: 1px solid var(--color-stone-border);
+  background: transparent; color: var(--color-ink-black);
+  font-size: 14px; cursor: pointer;
+  transition: background-color .15s ease;
+}
+.tab:hover { border-color: var(--color-stone-muted); }
+.tab[aria-selected="true"],
+.tab[aria-pressed="true"] {
+  background: var(--color-soot);
+  border-color: var(--color-soot);
+  color: var(--color-pure-white);
+}
+
+/* ==========================================================
+   8. CARDS & PANELS
+   ========================================================== */
+.panel { margin-top: 24px; }
+.panel[hidden] { display: none; }
+.card {
+  background: var(--color-pure-white);
+  border: 1px solid var(--color-stone-border);
+  border-radius: 10px;
+  padding: var(--card-padding);
+  box-shadow: var(--shadow-md);
+}
+.panel-head {
+  display: flex; flex-wrap: wrap; justify-content: space-between;
+  align-items: flex-end; gap: 16px;
+}
+.panel-head p { margin-top: 8px; max-width: 560px; }
+.code-tag {
+  display: inline-block; padding: 2px 8px; border-radius: 9999px;
+  border: 1px solid var(--color-stone-muted);
+  font-size: 12px; color: var(--color-warm-gray); white-space: nowrap;
+}
+
+/* ==========================================================
+   9. FORM CONTROLS (text input 6px radius, cyan focus ring)
+   ========================================================== */
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+  justify-content: space-between; margin-bottom: 16px;
+}
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 13px; color: var(--color-ink-black); }
+.input {
+  background: var(--color-pure-white);
+  border: 1px solid var(--color-stone-muted);
+  border-radius: 6px;
+  padding: 4px 12px; height: 36px;
+  color: var(--color-ink-black);
+  min-width: 260px;
+}
+.input::placeholder { color: var(--color-warm-gray); opacity: 1; }
+.input:focus { outline: 2px solid var(--color-cyan-signal); outline-offset: 0; border-color: transparent; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ==========================================================
+   10. TABLE
+   ========================================================== */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td {
+  text-align: left; padding: 12px 8px;
+  border-bottom: 1px solid var(--color-stone-border);
+  vertical-align: middle; white-space: nowrap;
+}
+th { font-size: 13px; font-weight: 500; color: var(--color-warm-gray); }
+td { color: var(--color-warm-gray); font-size: 14px; }
+td strong { font-weight: 500; color: var(--color-ink-black); }
+tbody tr:last-child td { border-bottom: none; }
+.pill {
+  display: inline-block; padding: 2px 8px; border-radius: 9999px;
+  font-size: 12px; color: var(--color-ink-black);
+  border: 1px solid var(--color-stone-border);
+}
+.pill--wash { background: var(--color-sky-wash); border-color: transparent; color: var(--color-ink-black); }
+.empty {
+  display: none; padding: 24px 8px; color: var(--color-warm-gray);
+}
+.empty.is-visible { display: block; }
+
+/* ==========================================================
+   11. CONTRACTS / VACATIONS / ALERTS / PAYROLL / CONSTANCIA
+   ========================================================== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.list { list-style: none; margin: 0; padding: 0; }
+.list > li {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; padding: 16px 0;
+  border-bottom: 1px solid var(--color-stone-border);
+}
+.list > li:last-child { border-bottom: none; padding-bottom: 0; }
+.list > li:first-child { padding-top: 0; }
+.list__title { color: var(--color-ink-black); font-weight: 500; }
+.list__meta { font-size: 13px; color: var(--color-warm-gray); }
+
+.meter {
+  height: 6px; border-radius: 9999px;
+  background: var(--color-stone-border);
+  overflow: hidden; margin-top: 8px; width: 220px; max-width: 100%;
+}
+.meter__fill { height: 100%; background: var(--color-soot); border-radius: 9999px; }
+
+.payroll-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--color-stone-border); }
+.payroll-row:last-child { border-bottom: none; }
+.payroll-row--total { font-weight: 500; color: var(--color-ink-black); padding-top: 16px; }
+.amount { font-variant-numeric: tabular-nums; color: var(--color-ink-black); }
+.note { font-size: 12px; color: var(--color-ash-gray); margin-top: 16px; }
+
+.form-stack { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+.form-stack .input { min-width: 0; width: 100%; }
+.form-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ==========================================================
+   12. FOOTER
+   ========================================================== */
+.footer {
+  margin-top: var(--section-gap);
+  padding: 32px 0 48px;
+  border-top: 1px solid var(--color-stone-border);
+  font-size: 13px; color: var(--color-ash-gray);
+}
+
+/* ==========================================================
+   13. RESPONSIVE (design.md defines no breakpoints; assumed 1024px / 720px)
+   ========================================================== */
+@media (max-width: 1024px) {
+  .topbar__inner { grid-template-columns: 1fr auto; }
+  .nav-links { display: none; }
+  .preview__inner { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px) {
+  :root { --section-gap: 64px; }
+  .container, .topbar__inner { padding-inline: 16px; }
+  h1, h2 { font-size: 32px; }
+  h1 { font-size: 32px; }
+  .hero { padding-top: 40px; }
+  .hero__lead p { font-size: 16px; }
+  .preview { padding: 8px; margin-top: 32px; }
+  .preview__inner { grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
+  .stat__value { font-size: 24px; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding: 0 16px 4px; }
+  .tab { flex: 0 0 auto; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .input { min-width: 0; width: 100%; }
+  .hide-sm { display: none; }
+  .meter { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ TOP NAV ============ -->
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="logo" href="#">
+      <!-- Spark glyph: 1px outline, ink black (design.md · Logo Wordmark) -->
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l4 4M15 15l4 4M19 5l-4 4M9 15l-4 4"/></svg>
+      SIGMA
+    </a>
+    <nav aria-label="Principal">
+      <ul class="nav-links">
+        <li><a href="#">Agenda</a></li>
+        <li><a href="#" aria-current="page">Recursos Humanos</a></li>
+        <li><a href="#">Usuarios</a></li>
+        <li><a href="#">Reportes</a></li>
+      </ul>
+    </nav>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="#">Cerrar sesión</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero section" aria-labelledby="hero-title">
+    <div class="hero__lead">
+      <h1 id="hero-title">Expedientes, vacaciones y planilla <span class="hl">en un solo lugar</span>.</h1>
+      <p>Consulte el estado del personal, controle saldos y prepare la planilla quincenal sin depender de expedientes físicos.</p>
+    </div>
+    <div class="hero__actions">
+      <button class="btn btn--primary" type="button">Nuevo expediente</button>
+      <button class="btn btn--ghost" type="button">Ver alertas</button>
+    </div>
+
+    <!-- Floating preview: summary of the module -->
+    <div class="preview" aria-label="Resumen del módulo">
+      <div class="preview__inner">
+        <div>
+          <p class="stat__label">Personal activo</p>
+          <p class="stat__value">132</p>
+          <p class="stat__note">Distribuido en programas</p>
+        </div>
+        <div>
+          <p class="stat__label">Vacaciones pendientes</p>
+          <p class="stat__value">8</p>
+          <p class="stat__note">Por registrar o aprobar</p>
+        </div>
+        <div>
+          <p class="stat__label">Alertas críticas</p>
+          <p class="stat__value">3</p>
+          <p class="stat__note">Contratos y saldos</p>
+        </div>
+        <div>
+          <p class="stat__label">Próxima planilla</p>
+          <p class="stat__value">15 Nov</p>
+          <p class="stat__note">Ciclo quincenal</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SUBMODULE TABS ============ -->
+  <section class="section" aria-label="Submódulos de Recursos Humanos">
+    <div class="tabs" role="tablist" aria-label="Secciones de RR.HH.">
+      <button class="tab" role="tab" id="tab-emp"  aria-controls="panel-emp"  aria-selected="true"  type="button">Expedientes</button>
+      <button class="tab" role="tab" id="tab-con"  aria-controls="panel-con"  aria-selected="false" tabindex="-1" type="button">Contratos</button>
+      <button class="tab" role="tab" id="tab-aus"  aria-controls="panel-aus"  aria-selected="false" tabindex="-1" type="button">Ausencias y permisos</button>
+      <button class="tab" role="tab" id="tab-nom"  aria-controls="panel-nom"  aria-selected="false" tabindex="-1" type="button">Nómina</button>
+      <button class="tab" role="tab" id="tab-dis"  aria-controls="panel-dis"  aria-selected="false" tabindex="-1" type="button">Desarrollo y disciplina</button>
+    </div>
+
+    <!-- ---------- PANEL: EXPEDIENTES (CU-08, CU-11) ---------- -->
+    <div class="panel" id="panel-emp" role="tabpanel" aria-labelledby="tab-emp">
+      <div class="panel-head">
+        <div>
+          <h2>Buscar <span class="hl">personal</span></h2>
+          <p>Encuentre un expediente por nombre, cargo o programa y abra su ficha digital.</p>
+        </div>
+        <span class="code-tag">CU-08 · CU-11</span>
+      </div>
+
+      <div class="card" style="margin-top:24px">
+        <div class="toolbar">
+          <div class="field">
+            <label for="search">Buscar empleado</label>
+            <input class="input" id="search" type="search" placeholder="Nombre, cargo o programa" autocomplete="off">
+          </div>
+          <div class="filters" role="group" aria-label="Filtrar por programa">
+            <button class="tab" type="button" data-filter="todos" aria-pressed="true">Todos</button>
+            <button class="tab" type="button" data-filter="Administración" aria-pressed="false">Administración</button>
+            <button class="tab" type="button" data-filter="Programa Juventud" aria-pressed="false">Programa Juventud</button>
+            <button class="tab" type="button" data-filter="Campo" aria-pressed="false">Campo</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Empleado</th>
+                <th scope="col">Cargo</th>
+                <th scope="col" class="hide-sm">Programa</th>
+                <th scope="col" class="hide-sm">Ingreso</th>
+                <th scope="col">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="emp-body">
+              <tr data-program="Administración"><td><strong>María Fernanda López</strong></td><td>Gerente Administrativo</td><td class="hide-sm">Administración</td><td class="hide-sm">03/02/2019</td><td><span class="pill">Activo</span></td></tr>
+              <tr data-program="Administración"><td><strong>Carla Sofía Reyes</strong></td><td>Asistente de RR.HH.</td><td class="hide-sm">Administración</td><td class="hide-sm">17/08/2021</td><td><span class="pill pill--wash">En vacaciones</span></td></tr>
+              <tr data-program="Programa Juventud"><td><strong>José Antonio Mejía</strong></td><td>Coordinador de programa</td><td class="hide-sm">Programa Juventud</td><td class="hide-sm">11/05/2020</td><td><span class="pill">Activo</span></td></tr>
+              <tr data-program="Programa Juventud"><td><strong>Ana Lucía Flores</strong></td><td>Facilitadora</td><td class="hide-sm">Programa Juventud</td><td class="hide-sm">01/03/2023</td><td><span class="pill">Activo</span></td></tr>
+              <tr data-program="Campo"><td><strong>Luis Enrique Paz</strong></td><td>Técnico de campo</td><td class="hide-sm">Campo</td><td class="hide-sm">22/10/2022</td><td><span class="pill">Activo</span></td></tr>
+            </tbody>
+          </table>
+          <p class="empty" id="emp-empty">No hay coincidencias. Revise el nombre o cambie el filtro de programa.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- PANEL: CONTRATOS (CU-08 flujo) ---------- -->
+    <div class="panel" id="panel-con" role="tabpanel" aria-labelledby="tab-con" hidden>
+      <div class="panel-head">
+        <div>
+          <h2>Contratos y <span class="hl">documentos</span></h2>
+          <p>Registre contratos y archive documentos firmados dentro del expediente de cada persona.</p>
+        </div>
+        <span class="code-tag">Almacén D1</span>
+      </div>
+      <div class="grid-2" style="margin-top:24px">
+        <div class="card">
+          <h3>Contratos vigentes</h3>
+          <ul class="list" style="margin-top:16px">
+            <li><div><p class="list__title">Carla Sofía Reyes</p><p class="list__meta">Contrato indefinido · desde 17/08/2021</p></div><span class="pill">Vigente</span></li>
+            <li><div><p class="list__title">José Antonio Mejía</p><p class="list__meta">Contrato a plazo · vence 30/11/2026</p></div><span class="pill pill--wash">Por vencer</span></li>
+            <li><div><p class="list__title">Ana Lucía Flores</p><p class="list__meta">Contrato a plazo · vence 28/02/2027</p></div><span class="pill">Vigente</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Registrar contrato</h3>
+          <form class="form-stack" onsubmit="return false;">
+            <div class="field"><label for="c-emp">Empleado</label><input class="input" id="c-emp" type="text" placeholder="Seleccione o escriba un nombre"></div>
+            <div class="field"><label for="c-tipo">Tipo de contrato</label><input class="input" id="c-tipo" type="text" placeholder="Indefinido, a plazo, por obra"></div>
+            <div class="field"><label for="c-fin">Fecha de vencimiento</label><input class="input" id="c-fin" type="text" placeholder="dd/mm/aaaa"></div>
+            <div class="form-actions">
+              <button class="btn btn--ghost" type="button">Archivar documento</button>
+              <button class="btn btn--ghost" type="button">Guardar contrato</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- PANEL: AUSENCIAS (CU-10, CU-13) ---------- -->
+    <div class="panel" id="panel-aus" role="tabpanel" aria-labelledby="tab-aus" hidden>
+      <div class="panel-head">
+        <div>
+          <h2>Saldos de <span class="hl">vacaciones</span></h2>
+          <p>Cada registro descuenta días gozados. El sistema avisa cuando un saldo queda negativo o un contrato se acerca a vencer.</p>
+        </div>
+        <span class="code-tag">CU-10 · CU-13</span>
+      </div>
+      <div class="grid-2" style="margin-top:24px">
+        <div class="card">
+          <h3>Saldo por empleado</h3>
+          <ul class="list" style="margin-top:16px">
+            <li>
+              <div><p class="list__title">María Fernanda López</p><p class="list__meta">12 de 15 días disponibles</p><div class="meter"><div class="meter__fill" style="width:80%"></div></div></div>
+              <span class="pill">12 días</span>
+            </li>
+            <li>
+              <div><p class="list__title">Carla Sofía Reyes</p><p class="list__meta">3 de 15 días disponibles</p><div class="meter"><div class="meter__fill" style="width:20%"></div></div></div>
+              <span class="pill pill--wash">3 días</span>
+            </li>
+            <li>
+              <div><p class="list__title">Luis Enrique Paz</p><p class="list__meta">9 de 15 días disponibles</p><div class="meter"><div class="meter__fill" style="width:60%"></div></div></div>
+              <span class="pill">9 días</span>
+            </li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Alertas de fechas críticas</h3>
+          <ul class="list" style="margin-top:16px">
+            <li><div><p class="list__title">Vence contrato de José Antonio Mejía</p><p class="list__meta">Faltan 28 días</p></div><span class="pill pill--wash">Revisar</span></li>
+            <li><div><p class="list__title">Saldo negativo de vacaciones</p><p class="list__meta">Requiere aprobación de la Coordinadora</p></div><span class="pill pill--wash">Revisar</span></li>
+            <li><div><p class="list__title">Capacitación obligatoria pendiente</p><p class="list__meta">Dos empleados sin registro</p></div><span class="pill">Aviso</span></li>
+          </ul>
+          <div class="form-actions" style="margin-top:24px">
+            <button class="btn btn--ghost btn--small" type="button">Registrar días gozados</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- PANEL: NÓMINA (CU-12) ---------- -->
+    <div class="panel" id="panel-nom" role="tabpanel" aria-labelledby="tab-nom" hidden>
+      <div class="panel-head">
+        <div>
+          <h2>Planilla <span class="hl">quincenal</span></h2>
+          <p>Deducciones de ley calculadas por el sistema. Contabilidad recibe una vista de solo lectura.</p>
+        </div>
+        <span class="code-tag">CU-12 · Almacén D3</span>
+      </div>
+      <div class="grid-2" style="margin-top:24px">
+        <div class="card">
+          <h3>Resumen del ciclo</h3>
+          <p class="list__meta" style="margin-top:8px">Quincena del 1 al 15 de noviembre de 2026 · montos de ejemplo</p>
+          <div style="margin-top:16px">
+            <div class="payroll-row"><span>Salario bruto</span><span class="amount">L 1,250,000.00</span></div>
+            <div class="payroll-row"><span>IHSS</span><span class="amount">− L 43,750.00</span></div>
+            <div class="payroll-row"><span>RAP</span><span class="amount">− L 31,250.00</span></div>
+            <div class="payroll-row"><span>INPREMA (solo personal de magisterio)</span><span class="amount">− L 0.00</span></div>
+            <div class="payroll-row payroll-row--total"><span>Salario neto</span><span class="amount">L 1,175,000.00</span></div>
+          </div>
+          <p class="note">Las tasas se actualizan con los parámetros vigentes de cada ente.</p>
+        </div>
+        <div class="card">
+          <h3>Estado del ciclo</h3>
+          <ul class="list" style="margin-top:16px">
+            <li><div><p class="list__title">Cálculo automático</p><p class="list__meta">Completado sin diferencias</p></div><span class="pill">Listo</span></li>
+            <li><div><p class="list__title">Vista para Contabilidad</p><p class="list__meta">Solo lectura, sin edición</p></div><span class="pill">Publicada</span></li>
+            <li><div><p class="list__title">Ajustes de personal</p><p class="list__meta">Dos cambios antes del cierre</p></div><span class="pill pill--wash">Pendiente</span></li>
+          </ul>
+          <div class="form-actions" style="margin-top:24px">
+            <button class="btn btn--ghost btn--small" type="button">Ver detalle de deducciones</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- PANEL: DESARROLLO Y DISCIPLINA (CU-09) ---------- -->
+    <div class="panel" id="panel-dis" role="tabpanel" aria-labelledby="tab-dis" hidden>
+      <div class="panel-head">
+        <div>
+          <h2>Constancias <span class="hl">laborales</span></h2>
+          <p>Genere una constancia en PDF con los datos del expediente. Puede descargarla y entregarla al empleado.</p>
+        </div>
+        <span class="code-tag">CU-09 · Almacén D4</span>
+      </div>
+      <div class="grid-2" style="margin-top:24px">
+        <div class="card">
+          <h3>Nueva constancia</h3>
+          <form class="form-stack" onsubmit="return false;">
+            <div class="field"><label for="k-emp">Empleado</label><input class="input" id="k-emp" type="text" placeholder="Nombre completo"></div>
+            <div class="field"><label for="k-motivo">Motivo</label><input class="input" id="k-motivo" type="text" placeholder="Trámite bancario, préstamo, otro"></div>
+            <div class="form-actions">
+              <button class="btn btn--primary" type="button">Generar constancia</button>
+              <button class="btn btn--ghost" type="button">Limpiar</button>
+            </div>
+          </form>
+        </div>
+        <div class="card">
+          <h3>Constancias recientes</h3>
+          <ul class="list" style="margin-top:16px">
+            <li><div><p class="list__title">Ana Lucía Flores</p><p class="list__meta">Generada 28/10/2026</p></div><button class="btn btn--ghost btn--small" type="button">Descargar</button></li>
+            <li><div><p class="list__title">Luis Enrique Paz</p><p class="list__meta">Generada 14/10/2026</p></div><button class="btn btn--ghost btn--small" type="button">Descargar</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    SIGMA · Sistema Integrado de Gestión y Manejo Administrativo · Asociación para el Servicio Mundial
+  </footer>
+</main>
+
+<script>
+/* ==========================================================
+   JS — tabs, search, program filter (visual behavior only)
+   ========================================================== */
+(function () {
+  // --- Tabs (WAI-ARIA pattern with arrow-key navigation) ---
+  const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+
+  function activate(tab) {
+    tabs.forEach(t => {
+      const selected = t === tab;
+      t.setAttribute('aria-selected', selected);
+      t.tabIndex = selected ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !selected;
+    });
+    tab.focus();
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => activate(tab));
+    tab.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const dir = e.key === 'ArrowRight' ? 1 : -1;
+        activate(tabs[(i + dir + tabs.length) % tabs.length]);
+        e.preventDefault();
+      }
+    });
+  });
+
+  // --- Search + program filter for the employee table ---
+  const search = document.getElementById('search');
+  const filterBtns = Array.from(document.querySelectorAll('[data-filter]'));
+  const rows = Array.from(document.querySelectorAll('#emp-body tr'));
+  const empty = document.getElementById('emp-empty');
+  let program = 'todos';
+
+  function applyFilters() {
+    const q = search.value.trim().toLowerCase();
+    let visible = 0;
+    rows.forEach(row => {
+      const matchesText = row.textContent.toLowerCase().includes(q);
+      const matchesProgram = program === 'todos' || row.dataset.program === program;
+      const show = matchesText && matchesProgram;
+      row.hidden = !show;
+      if (show) visible++;
+    });
+    empty.classList.toggle('is-visible', visible === 0);
+  }
+
+  search.addEventListener('input', applyFilters);
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      program = btn.dataset.filter;
+      filterBtns.forEach(b => b.setAttribute('aria-pressed', b === btn));
+      applyFilters();
+    });
+  });
+})();
+</script>
+</body>
+</html>

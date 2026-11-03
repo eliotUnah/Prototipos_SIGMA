@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIGMA · Agenda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================
+   1. TOKENS (design.md · Goodnotes)
+   Roobert no está disponible: se usa Plus Jakarta Sans, sustituto oficial.
+   ========================================================== */
+:root {
+  --color-pure-canvas: #ffffff;
+  --color-midnight-ink: #000000;
+  --color-deep-charcoal: #1e1e1e;
+  --color-graphite: #111213;
+  --color-slate: #565656;
+  --color-fog: #888889;
+  --color-ash: #666666;
+  --color-steel: #333333;
+  --color-border-medium: #e8e8e8;
+  --color-border-soft: #bebebe;
+  --color-aqua-spark: #57d2ee;
+  --color-sky-link: #0299e0;
+  --color-highlighter-yellow: #f2e6b3;
+  --color-warm-off-white: #f6f5ee;
+  --font-roobert: 'Plus Jakarta Sans', ui-sans-serif, 'DM Sans', sans-serif;
+
+  --page-max-width: 1200px;
+  --section-gap: 80px;
+  --card-padding: 24px;
+  --element-gap: 24px;
+  --rail-width: 72px;
+  --panel-width: 240px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+/* ==========================================================
+   2. BASE
+   ========================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--color-pure-canvas); color: var(--color-slate);
+  font-family: var(--font-roobert); font-size: 16px; line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { color: var(--color-midnight-ink); margin: 0; font-weight: 700; }
+h1 { font-size: 40px; line-height: 1.11; letter-spacing: -1.68px; }
+h2 { font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; font-weight: 600; }
+h3 { font-size: 22px; line-height: 1.25; letter-spacing: -0.35px; font-weight: 600; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--color-aqua-spark); outline-offset: 2px; border-radius: 4px; }
+
+/* Highlighter: flat, no radius */
+.hl { background: var(--color-highlighter-yellow); border-radius: 0; color: var(--color-midnight-ink); }
+
+/* ==========================================================
+   3. APP SHELL
+   ========================================================== */
+.app { display: grid; grid-template-columns: var(--rail-width) 1fr; min-height: 100vh; }
+
+/* ---- Sidebar: rail por defecto, panel completo al pasar el mouse ---- */
+.sidebar {
+  position: sticky; top: 0; height: 100vh; z-index: 30;
+  width: var(--rail-width); overflow: hidden;
+  background: var(--color-pure-canvas);
+  border-right: 1px solid var(--color-border-medium);
+  transition: width .3s var(--ease);
+}
+.sidebar__inner {
+  width: var(--panel-width); height: 100%;
+  display: flex; flex-direction: column; gap: 24px;
+  padding: 24px 16px;
+}
+.sidebar:hover,
+.sidebar:focus-within { width: var(--panel-width); }
+
+/* Etiquetas: aparecen en escalera al expandir (animación única por hover) */
+.lbl {
+  opacity: 0; transform: translateX(-6px); white-space: nowrap;
+  transition: opacity .2s var(--ease), transform .2s var(--ease);
+}
+.sidebar:hover .lbl,
+.sidebar:focus-within .lbl { opacity: 1; transform: none; }
+.sidebar:hover .nav__item:nth-child(2) .lbl,
+.sidebar:hover .nav__item:nth-child(2) .lbl { transition-delay: 40ms; }
+.sidebar:hover .nav__item:nth-child(3) .lbl { transition-delay: 80ms; }
+.sidebar:hover .nav__item:nth-child(4) .lbl { transition-delay: 120ms; }
+.sidebar:hover .nav__item:nth-child(5) .lbl { transition-delay: 160ms; }
+
+.logo { display: flex; align-items: center; gap: 12px; padding: 0 12px; color: var(--color-midnight-ink); font-weight: 600; font-size: 16px; text-decoration: none; }
+.icon { width: 20px; height: 20px; flex: 0 0 20px; fill: currentColor; }
+
+.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav__label { padding: 0 12px 8px; font-size: 13px; color: var(--color-fog); }
+.nav__item {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  min-height: 40px; padding: 0 12px;
+  background: transparent; border: 0; border-radius: 10px;
+  border-left: 2px solid transparent;
+  color: var(--color-ash); font-size: 15px; text-align: left; cursor: pointer;
+  transition: color .15s ease, background-color .15s ease;
+}
+.nav__item:hover { color: var(--color-midnight-ink); background: var(--color-warm-off-white); }
+/* Activo: tinte de marca, radio 0 y marcador negro (design.md · Teal Tinted control) */
+.nav__item[aria-current="true"] {
+  background: rgba(87, 210, 238, 0.1);
+  color: var(--color-midnight-ink); font-weight: 600;
+  border-radius: 0; border-left-color: var(--color-midnight-ink);
+}
+
+.sidebar__footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--color-border-medium); display: flex; gap: 12px; align-items: center; }
+.avatar {
+  flex: 0 0 36px; width: 36px; height: 36px; border-radius: 10px;
+  background: var(--color-warm-off-white); border: 1px solid var(--color-border-soft);
+  display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--color-midnight-ink);
+}
+.sidebar__user p { font-size: 14px; font-weight: 500; color: var(--color-midnight-ink); }
+.sidebar__user small { display: block; font-size: 13px; color: var(--color-fog); }
+.sidebar__user a { display: inline-block; margin-top: 8px; font-size: 14px; color: var(--color-sky-link); font-weight: 500; text-decoration: none; }
+.sidebar__user a:hover { text-decoration: underline; }
+
+/* Barra móvil (solo < 1024px) */
+.mobilebar {
+  display: none; align-items: center; justify-content: space-between;
+  height: 64px; padding: 0 16px; position: sticky; top: 0; z-index: 20;
+  background: var(--color-pure-canvas); border-bottom: 1px solid var(--color-border-medium);
+}
+
+.content { min-width: 0; padding: 48px; }
+.content__inner { max-width: var(--page-max-width); margin: 0 auto; }
+
+/* ==========================================================
+   4. BUTTONS — 10px radius, un solo botón cian relleno
+   ========================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 16px; border-radius: 10px;
+  font-size: 15px; font-weight: 500; line-height: 1.4;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  border: 1px solid transparent; background: transparent;
+  transition: background-color .15s ease;
+}
+.btn--primary { background: var(--color-aqua-spark); border-color: var(--color-aqua-spark); color: var(--color-graphite); }
+.btn--ghost { border: 1px solid var(--color-deep-charcoal); color: var(--color-deep-charcoal); font-weight: 400; padding: 10px 12px; }
+.btn--ghost:hover { background: var(--color-warm-off-white); }
+.btn--small { padding: 6px 12px; font-size: 14px; }
+
+/* ==========================================================
+   5. PAGE HEADER + PANELS
+   ========================================================== */
+.page-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--element-gap); }
+.page-head p { margin-top: 16px; font-size: 18px; color: var(--color-ash); max-width: 560px; }
+.page-head__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.panel { margin-top: 40px; }
+.panel[hidden] { display: none; }
+/* Entrada de cada sección al cambiar de pestaña (respuesta a la acción del usuario) */
+.panel:not([hidden]) { animation: rise .4s var(--ease) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ==========================================================
+   6. CARDS, TAGS, FIELDS
+   ========================================================== */
+.card { background: var(--color-pure-canvas); border: 1px solid var(--color-border-soft); border-radius: 10px; padding: var(--card-padding); }
+.card p { margin-top: 8px; }
+.card-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.muted { font-size: 14px; color: var(--color-fog); }
+
+.tag { display: inline-block; padding: 2px 10px; border-radius: 10px; border: 1px solid var(--color-border-soft); font-size: 12px; color: var(--color-steel); white-space: nowrap; }
+.tag--tint { background: rgba(87, 210, 238, 0.1); border-color: rgba(87, 210, 222, 0.4); color: var(--color-midnight-ink); }
+
+.field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.field label { font-size: 14px; color: var(--color-steel); }
+.input, .select, .textarea {
+  width: 100%; min-height: 40px; padding: 8px 12px;
+  background: var(--color-pure-canvas); border: 1px solid var(--color-border-soft); border-radius: 10px;
+  color: var(--color-midnight-ink);
+}
+.textarea { min-height: 96px; resize: vertical; }
+.input::placeholder, .textarea::placeholder { color: var(--color-fog); opacity: 1; }
+.toolbar { display: flex; flex-wrap: wrap; gap: var(--element-gap); align-items: flex-end; margin-bottom: 24px; }
+.toolbar .field { flex: 1 1 240px; max-width: 360px; }
+.toolbar .field--narrow { flex: 0 1 200px; }
+
+/* ==========================================================
+   7. WEEK GRID (CU-04)
+   ========================================================== */
+.days { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--element-gap); }
+.day { display: flex; flex-direction: column; gap: 16px; }
+.act { border-top: 1px solid var(--color-border-medium); padding-top: 12px; }
+.act time { display: block; font-size: 13px; color: var(--color-fog); }
+.act p { font-size: 14px; color: var(--color-steel); line-height: 1.43; margin-top: 4px; }
+.add-act { margin-top: auto; align-self: flex-start; }
+
+/* ==========================================================
+   8. TABLES (CU-05, D8)
+   ========================================================== */
+.table-wrap { overflow-x: auto; border: 1px solid var(--color-border-soft); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; background: var(--color-pure-canvas); }
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--color-border-medium); white-space: nowrap; font-size: 14px; }
+th { color: var(--color-steel); font-weight: 600; }
+td { color: var(--color-slate); }
+td strong { color: var(--color-midnight-ink); font-weight: 500; }
+tbody tr:last-child td { border-bottom: none; }
+.empty { display: none; padding: 24px 16px; color: var(--color-ash); }
+.empty.is-visible { display: block; }
+
+/* ==========================================================
+   9. INFORMES (CU-06, CU-07)
+   ========================================================== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--element-gap); }
+.dropzone {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 12px;
+  min-height: 180px; padding: var(--card-padding);
+  border: 1px dashed var(--color-border-soft); border-radius: 10px;
+}
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--color-border-medium); }
+.list li:first-child { padding-top: 0; }
+.list li:last-child { border-bottom: none; padding-bottom: 0; }
+.list__title { color: var(--color-midnight-ink); font-weight: 500; }
+.list__meta { font-size: 14px; color: var(--color-fog); margin-top: 2px; }
+.link { color: var(--color-sky-link); font-weight: 500; text-decoration: none; font-size: 15px; }
+.link:hover { text-decoration: underline; }
+
+.footer { margin-top: var(--section-gap); padding-top: 24px; border-top: 1px solid var(--color-border-medium); font-size: 14px; color: var(--color-fog); }
+
+.overlay { display: none; }
+
+/* ==========================================================
+   10. RESPONSIVE (design.md no define breakpoints; asumidos 1024 / 720)
+   En escritorio la barra es rail + hover. En táctil/móvil, menú deslizable.
+   ========================================================== */
+@media (max-width: 1024px) {
+  .app { grid-template-columns: 1fr; }
+  .mobilebar { display: flex; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; height: 100vh;
+    width: min(288px, 84vw); transform: translateX(-100%); visibility: hidden;
+    transition: transform .28s var(--ease), visibility .28s;
+  }
+  .sidebar__inner { width: 100%; }
+  .sidebar .lbl { opacity: 1; transform: none; }
+  .sidebar.is-open { transform: none; visibility: visible; }
+  .overlay { position: fixed; inset: 0; z-index: 25; background: rgba(0, 0, 0, 0.35); }
+  .overlay.is-visible { display: block; }
+  .content { padding: 32px 24px; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+/* Hover-expand solo con puntero fino (escritorio) */
+@media (hover: none) {
+  .sidebar:hover { width: var(--rail-width); }
+}
+@media (max-width: 720px) {
+  :root { --section-gap: 64px; }
+  .content { padding: 24px 16px; }
+  .toolbar .field, .toolbar .field--narrow { flex: 1 1 100%; max-width: none; }
+  .days { grid-template-columns: 1fr; }
+  .page-head p { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .lbl { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar" aria-label="Navegación de agenda">
+    <div class="sidebar__inner">
+      <a class="logo" href="#" aria-label="SIGMA">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v5h-2zM11 17h2v5h-2zM2 11h5v2H2zM17 11h5v2h-5zM5.6 4.2l1.4-1.4 3.5 3.5-1.4 1.4zM14.5 17.3l1.4-1.4 3.5 3.5-1.4 1.4zM19.8 4.2l1.4 1.4-3.5 3.5-1.4-1.4zM9.5 14.5l-1.4 1.4-3.5-3.5 1.4-1.4z"/></svg>
+        <span class="lbl">SIGMA</span>
+      </a>
+
+      <nav class="nav" aria-label="Secciones de agenda">
+        <span class="nav__label lbl">Agenda</span>
+        <button class="nav__item" type="button" data-target="p-sem" aria-current="true">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm-1 8v10h12V10H6z"/></svg>
+          <span class="lbl">Mi semana</span>
+        </button>
+        <button class="nav__item" type="button" data-target="p-con" aria-current="false">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm8 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 21c0-3.9 3.1-7 7-7s7 3.1 7 7H2zm14.5-6.9c3 .5 6.5 2.4 6.5 6.9h-4.6c0-1.6-.5-3.4-1.9-4.9z"/></svg>
+          <span class="lbl">Consolidado</span>
+        </button>
+        <button class="nav__item" type="button" data-target="p-inf" aria-current="false">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v14H6V2zm8 1.5V9h5.5L14 3.5zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
+          <span class="lbl">Informes</span>
+        </button>
+        <button class="nav__item" type="button" data-target="p-his" aria-current="false">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1 5v6l4.5 2.7 1-1.6-3.5-2.1V7H11z"/></svg>
+          <span class="lbl">Historial</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <span class="avatar" aria-hidden="true">MF</span>
+        <div class="sidebar__user lbl">
+          <p>María Fernanda López</p>
+          <small>Gerente Administrativo</small>
+          <a href="#">Cerrar sesión</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="overlay" id="overlay" hidden></div>
+
+  <!-- ================= CONTENIDO ================= -->
+  <div style="display:contents">
+    <div class="mobilebar">
+      <a class="logo" href="#" style="padding:0">SIGMA</a>
+      <button class="btn btn--ghost btn--small" id="menu-btn" type="button" aria-expanded="false" aria-controls="sidebar">Menú</button>
+    </div>
+
+    <main class="content" id="main">
+      <div class="content__inner">
+
+        <header class="page-head">
+          <div>
+            <h1>Agenda</h1>
+            <p>Registre sus actividades de la <span class="hl">semana</span>, consulte las agendas del personal y cargue los informes mensuales.</p>
+          </div>
+          <div class="page-head__actions">
+            <button class="btn btn--ghost" type="button">Copiar semana anterior</button>
+            <button class="btn btn--primary" type="button">Guardar agenda</button>
+          </div>
+        </header>
+
+        <!-- ---------- MI SEMANA · CU-04 ---------- -->
+        <section class="panel" id="p-sem" aria-labelledby="n-sem">
+          <div class="card-head">
+            <div>
+              <h2 id="n-sem">Semana del 2 al 6 de noviembre</h2>
+              <p class="muted">Estado: borrador · 7 actividades registradas</p>
+            </div>
+            <span class="tag tag--tint">Borrador</span>
+          </div>
+          <div class="days">
+            <article class="card day">
+              <h3>Lunes 2</h3>
+              <div class="act"><time>08:00</time><p>Revisión de planilla quincenal</p></div>
+              <div class="act"><time>10:00</time><p>Reunión con Jefatura Administrativa</p></div>
+              <button class="btn btn--ghost btn--small add-act" type="button">Agregar actividad</button>
+            </article>
+            <article class="card day">
+              <h3>Martes 3</h3>
+              <div class="act"><time>09:00</time><p>Revisión de expedientes nuevos</p></div>
+              <div class="act"><time>14:00</time><p>Capacitación interna</p></div>
+              <button class="btn btn--ghost btn--small add-act" type="button">Agregar actividad</button>
+            </article>
+            <article class="card day">
+              <h3>Miércoles 4</h3>
+              <div class="act"><time>08:30</time><p>Cierre de solicitudes de vacaciones</p></div>
+              <button class="btn btn--ghost btn--small add-act" type="button">Agregar actividad</button>
+            </article>
+            <article class="card day">
+              <h3>Jueves 5</h3>
+              <div class="act"><time>10:00</time><p>Borrador del informe mensual</p></div>
+              <div class="act"><time>15:00</time><p>Seguimiento de alertas de contratos</p></div>
+              <button class="btn btn--ghost btn--small add-act" type="button">Agregar actividad</button>
+            </article>
+            <article class="card day">
+              <h3>Viernes 6</h3>
+              <div class="act"><time>09:00</time><p>Entrega de agenda a Gerencia</p></div>
+              <button class="btn btn--ghost btn--small add-act" type="button">Agregar actividad</button>
+            </article>
+          </div>
+        </section>
+
+        <!-- ---------- CONSOLIDADO · CU-05 ---------- -->
+        <section class="panel" id="p-con" aria-labelledby="n-con" hidden>
+          <h2 id="n-con" style="margin-bottom:24px">Agendas consolidadas</h2>
+          <div class="toolbar">
+            <div class="field">
+              <label for="q">Buscar persona</label>
+              <input class="input" id="q" type="search" placeholder="Nombre o programa" autocomplete="off">
+            </div>
+            <div class="field field--narrow">
+              <label for="estado">Estado de envío</label>
+              <select class="select" id="estado">
+                <option value="todos">Todos</option>
+                <option value="Enviada">Enviada</option>
+                <option value="Pendiente">Pendiente</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Persona</th><th scope="col">Programa</th><th scope="col">Actividades</th><th scope="col">Estado</th></tr></thead>
+              <tbody id="con-body">
+                <tr data-estado="Enviada"><td><strong>María Fernanda López</strong></td><td>Administración</td><td>5</td><td><span class="tag tag--tint">Enviada</span></td></tr>
+                <tr data-estado="Pendiente"><td><strong>Carla Sofía Reyes</strong></td><td>Administración</td><td>4</td><td><span class="tag">Pendiente</span></td></tr>
+                <tr data-estado="Enviada"><td><strong>José Antonio Mejía</strong></td><td>Programa Juventud</td><td>6</td><td><span class="tag tag--tint">Enviada</span></td></tr>
+                <tr data-estado="Pendiente"><td><strong>Ana Lucía Flores</strong></td><td>Programa Juventud</td><td>3</td><td><span class="tag">Pendiente</span></td></tr>
+                <tr data-estado="Enviada"><td><strong>Luis Enrique Paz</strong></td><td>Campo</td><td>5</td><td><span class="tag tag--tint">Enviada</span></td></tr>
+              </tbody>
+            </table>
+            <p class="empty" id="con-empty">No hay coincidencias. Revise el nombre o cambie el estado.</p>
+          </div>
+        </section>
+
+        <!-- ---------- INFORMES · CU-06, CU-07 ---------- -->
+        <section class="panel" id="p-inf" aria-labelledby="n-inf" hidden>
+          <h2 id="n-inf" style="margin-bottom:24px">Informes mensuales</h2>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Cargar informe mensual</h3>
+              <p class="muted">Suba el informe del mes para que Jefatura lo revise.</p>
+              <div class="dropzone" style="margin-top:16px">
+                <p>Arrastre el archivo aquí</p>
+                <p class="muted">PDF o Word · hasta 10 MB</p>
+                <button class="btn btn--ghost btn--small" type="button">Seleccionar archivo</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Observaciones de Jefatura</h3>
+              <p class="muted">Se guardan vinculadas al informe seleccionado.</p>
+              <div class="field" style="margin-top:16px">
+                <label for="obs">Observación</label>
+                <textarea class="textarea" id="obs" placeholder="Escriba una observación para el informe"></textarea>
+              </div>
+              <div style="margin-top:16px"><button class="btn btn--ghost btn--small" type="button">Guardar observación</button></div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:24px">
+            <h3>Informes cargados</h3>
+            <ul class="list" style="margin-top:16px">
+              <li><div><p class="list__title">Informe de octubre 2026</p><p class="list__meta">Cargado 31/10/2026 · 1 observación</p></div><a class="link" href="#">Ver</a></li>
+              <li><div><p class="list__title">Informe de septiembre 2026</p><p class="list__meta">Cargado 30/09/2026 · sin observaciones</p></div><a class="link" href="#">Ver</a></li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ---------- HISTORIAL · D8 / RN-03 ---------- -->
+        <section class="panel" id="p-his" aria-labelledby="n-his" hidden>
+          <div class="card-head">
+            <div>
+              <h2 id="n-his">Historial de cambios</h2>
+              <p class="muted">Registro automático de modificaciones en agendas. No se puede editar ni eliminar.</p>
+            </div>
+            <span class="tag">RN-03 · automático</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Fecha</th><th scope="col">Persona</th><th scope="col">Acción</th><th scope="col">Detalle</th></tr></thead>
+              <tbody>
+                <tr><td>02/11/2026 09:12</td><td><strong>Carla Sofía Reyes</strong></td><td>Editó actividad</td><td>Martes 3 · Capacitación interna</td></tr>
+                <tr><td>31/10/2026 16:40</td><td><strong>José Antonio Mejía</strong></td><td>Agregó actividad</td><td>Jueves 29 · Seguimiento de programa</td></tr>
+                <tr><td>30/10/2026 11:05</td><td><strong>María Fernanda López</strong></td><td>Envió agenda</td><td>Semana del 26 al 30 de octubre</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer class="footer">SIGMA · Sistema Integrado de Gestión y Manejo Administrativo · Asociación para el Servicio Mundial</footer>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   JS — navegación del sidebar, menú móvil, filtros
+   ========================================================== */
+(function () {
+  // --- Navegación entre secciones desde el sidebar ---
+  const items = Array.from(document.querySelectorAll('.nav__item'));
+  function show(item) {
+    items.forEach(i => {
+      const on = i === item;
+      i.setAttribute('aria-current', on ? 'true' : 'false');
+      document.getElementById(i.dataset.target).hidden = !on;
+    });
+    // En móvil, cerrar el menú al elegir una sección
+    if (window.matchMedia('(max-width: 1024px)').matches) setDrawer(false);
+  }
+  items.forEach(i => i.addEventListener('click', () => show(i)));
+
+  // --- Menú móvil (drawer) ---
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const menuBtn = document.getElementById('menu-btn');
+  function setDrawer(open) {
+    sidebar.classList.toggle('is-open', open);
+    overlay.hidden = !open;
+    overlay.classList.toggle('is-visible', open);
+    menuBtn.setAttribute('aria-expanded', open);
+  }
+  menuBtn.addEventListener('click', () => setDrawer(!sidebar.classList.contains('is-open')));
+  overlay.addEventListener('click', () => setDrawer(false));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && sidebar.classList.contains('is-open')) setDrawer(false);
+  });
+
+  // --- Consolidado: búsqueda + estado ---
+  const q = document.getElementById('q');
+  const estado = document.getElementById('estado');
+  const rows = Array.from(document.querySelectorAll('#con-body tr'));
+  const empty = document.getElementById('con-empty');
+  function applyFilters() {
+    const text = q.value.trim().toLowerCase();
+    let visible = 0;
+    rows.forEach(row => {
+      const ok = row.textContent.toLowerCase().includes(text) &&
+        (estado.value === 'todos' || row.dataset.estado === estado.value);
+      row.hidden = !ok;
+      if (ok) visible++;
+    });
+    empty.classList.toggle('is-visible', visible === 0);
+  }
+  q.addEventListener('input', applyFilters);
+  estado.addEventListener('change', applyFilters);
+})();
+</script>
+</body>
+</html>
