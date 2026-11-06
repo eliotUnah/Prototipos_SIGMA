@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agendas consolidadas · SIGMA</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (CDN). En producción, compílelo con la CLI. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tokens de DESIGN__1__1.md (Seline Analytics)
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#fafaf9', paper: '#ffffff', hair: '#e8e6e5', hairmuted: '#d6d3d1',
+            ash: '#a8a29e', warm: '#78716c', ink: '#0c0a09', soot: '#1c1917',
+            cyan: '#3ba6f1', cyanedge: '#3398e1', skywash: '#c1e1f7',
+          },
+          fontFamily: {
+            roobert: ['Inter Tight', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            inter: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          borderRadius: { card: '10px', feature: '16px', input: '6px' },
+          boxShadow: { float: 'rgba(17,12,46,0.12) 0px 12px 45px 0px' },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="min-h-screen bg-canvas font-inter text-warm antialiased">
+
+  <!-- ============ NAVEGACIÓN SUPERIOR ============ -->
+  <header class="sticky top-0 z-20 h-16 border-b border-hair bg-paper print:hidden">
+    <div class="mx-auto flex h-full max-w-[1200px] items-center justify-between gap-6 px-6">
+      <a href="#" class="flex items-center">
+        <img src="asm-logo.png" alt="Asociación para el Servicio Mundial" class="h-7 w-auto select-none" draggable="false">
+      </a>
+      <nav aria-label="Principal" class="hidden md:block">
+        <ul class="flex items-center gap-2 text-[14px]">
+          <li><a href="#" aria-current="page" class="flex h-8 items-center px-3 text-ink">Agendas</a></li>
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Recursos Humanos</a></li>
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Reportes</a></li>
+        </ul>
+      </nav>
+      <button type="button" class="rounded-full border border-hair px-4 py-2 text-[14px] text-ink hover:bg-canvas">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-[1200px] px-6 pb-24 pt-16 md:px-8">
+
+    <!-- ============ ENCABEZADO ============ -->
+    <section class="flex flex-wrap items-end justify-between gap-6 print:hidden">
+      <div class="max-w-[680px]">
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-hair px-3 py-1 text-[12px] text-warm">
+          <svg class="h-3.5 w-3.5 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          Solo lectura · Dirección Ejecutiva
+        </span>
+        <h1 class="mt-6 font-roobert text-[52px] font-normal leading-[1.12] tracking-[-0.021em] text-ink">
+          Agendas <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">consolidadas</span>
+        </h1>
+        <p class="mt-4 text-[16px] leading-[1.69] tracking-[0.048px] text-warm">Consulte y descargue las agendas semanales de todo el personal, filtradas por colaborador, programa y rango de fechas.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <!-- Única CTA rellena de la vista -->
+        <button type="button" id="btn-csv" class="rounded-full border border-cyanedge bg-cyan px-4 py-2 text-[14px] font-medium text-paper hover:brightness-95">Descargar consolidado</button>
+        <button type="button" id="btn-print" class="rounded-full border border-hair px-4 py-2 text-[14px] text-ink hover:bg-paper">Imprimir o PDF</button>
+      </div>
+    </section>
+
+    <!-- ============ FILTROS ============ -->
+    <section class="mt-12 rounded-card border border-hair bg-paper p-6 print:hidden" aria-labelledby="h-f">
+      <h2 id="h-f" class="font-roobert text-[20px] leading-[1.2] tracking-[-0.1px] text-ink">Filtros</h2>
+      <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="space-y-1.5">
+          <label for="f-col" class="block text-[14px] text-ink">Colaborador</label>
+          <select id="f-col" class="h-10 w-full rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink outline-none focus:ring-2 focus:ring-cyan"></select>
+        </div>
+        <div class="space-y-1.5">
+          <label for="f-prog" class="block text-[14px] text-ink">Programa</label>
+          <select id="f-prog" class="h-10 w-full rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink outline-none focus:ring-2 focus:ring-cyan"></select>
+        </div>
+        <div class="space-y-1.5">
+          <label for="f-desde" class="block text-[14px] text-ink">Desde</label>
+          <input id="f-desde" type="date" value="2026-10-26" class="h-10 w-full rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink outline-none focus:ring-2 focus:ring-cyan">
+        </div>
+        <div class="space-y-1.5">
+          <label for="f-hasta" class="block text-[14px] text-ink">Hasta</label>
+          <input id="f-hasta" type="date" value="2026-11-06" class="h-10 w-full rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink outline-none focus:ring-2 focus:ring-cyan">
+        </div>
+      </div>
+      <p id="range-err" hidden class="mt-3 text-[12px] text-ink">La fecha inicial no puede ser posterior a la final.</p>
+      <div class="mt-5 flex justify-end">
+        <button type="button" id="btn-clear" class="rounded-full border border-hair px-4 py-2 text-[14px] text-ink hover:bg-canvas">Limpiar filtros</button>
+      </div>
+    </section>
+
+    <!-- ============ RESUMEN FLOTANTE ============ -->
+    <section class="mt-12" aria-label="Resumen de resultados">
+      <div class="rounded-feature bg-paper p-2 shadow-float">
+        <div class="grid grid-cols-1 divide-y divide-hair rounded-card border border-hair sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div class="p-6"><p class="text-[14px] text-warm">Actividades</p><p id="k-act" class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">0</p></div>
+          <div class="p-6"><p class="text-[14px] text-warm">Colaboradores con registro</p><p id="k-col" class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">0</p></div>
+          <div class="p-6"><p class="text-[14px] text-warm">Pendientes de envío</p><p id="k-pen" class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">0</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TABLA CONSOLIDADA ============ -->
+    <section class="mt-12" aria-labelledby="h-t">
+      <h2 id="h-t" class="font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">Actividades <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">registradas</span></h2>
+
+      <div class="mt-6 overflow-hidden rounded-card border border-hair bg-paper">
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-[14px]">
+            <thead>
+              <tr class="border-b border-hair text-left">
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Fecha</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Hora</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Colaborador</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Programa</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Actividad</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <p id="empty" hidden class="px-6 py-8 text-center text-[14px] text-warm">No hay actividades para los filtros seleccionados.</p>
+        </div>
+      </div>
+      <p class="mt-3 text-[12px] text-ash">Datos de ejemplo. El consolidado descargado incluye solo las filas visibles con los filtros actuales.</p>
+    </section>
+
+    <footer class="mt-24 border-t border-hair pt-6 text-[12px] text-warm print:hidden">SIGMA · Sistema Integrado de Gestión y Manejo Administrativo · Asociación para el Servicio Mundial</footer>
+  </main>
+
+  <style>
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #3ba6f1; outline-offset: 2px; }
+    @media print {
+      body { background: #ffffff; }
+      .print\:hidden { display: none !important; }
+      .shadow-float { box-shadow: none !important; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+
+  <script>
+    (function () {
+      // Colaboradores y programas (nombres del informe y de los demás módulos)
+      const PEOPLE = {
+        'María Fernanda López': 'Administración',
+        'Carla Sofía Reyes':    'Administración',
+        'José Antonio Mejía':   'Programa Juventud',
+        'Ana Lucía Flores':     'Programa Juventud',
+        'Luis Enrique Paz':     'Campo',
+      };
+
+      // Actividades de ejemplo (fecha en formato ISO para comparar rangos)
+      const ACTS = [
+        { date: '2026-10-28', time: '09:00', who: 'María Fernanda López', act: 'Cierre de solicitudes de vacaciones', st: 'Enviada' },
+        { date: '2026-10-29', time: '10:00', who: 'Luis Enrique Paz',     act: 'Inventario de equipo de campo',       st: 'Enviada' },
+        { date: '2026-11-02', time: '08:00', who: 'María Fernanda López', act: 'Revisión de planilla quincenal',      st: 'Enviada' },
+        { date: '2026-11-02', time: '10:00', who: 'María Fernanda López', act: 'Reunión con Jefatura Administrativa', st: 'Enviada' },
+        { date: '2026-11-03', time: '09:00', who: 'Carla Sofía Reyes',    act: 'Revisión de expedientes nuevos',      st: 'Enviada' },
+        { date: '2026-11-03', time: '14:00', who: 'Carla Sofía Reyes',    act: 'Capacitación interna',                st: 'Enviada' },
+        { date: '2026-11-04', time: '10:00', who: 'José Antonio Mejía',   act: 'Seguimiento de facilitadores',        st: 'Enviada' },
+        { date: '2026-11-04', time: '15:00', who: 'Ana Lucía Flores',     act: 'Taller comunitario',                  st: 'Pendiente' },
+        { date: '2026-11-05', time: '09:00', who: 'Luis Enrique Paz',     act: 'Visita a proyecto de campo',          st: 'Enviada' },
+        { date: '2026-11-05', time: '14:00', who: 'José Antonio Mejía',   act: 'Informe de programa',                 st: 'Pendiente' },
+      ];
+
+      const $ = id => document.getElementById(id);
+      const fCol = $('f-col'), fProg = $('f-prog'), fDesde = $('f-desde'), fHasta = $('f-hasta');
+      const rows = $('rows');
+      let visible = [];
+
+      // Llena los selectores
+      fCol.add(new Option('Todos los colaboradores', ''));
+      Object.keys(PEOPLE).forEach(n => fCol.add(new Option(n, n)));
+      fProg.add(new Option('Todos los programas', ''));
+      [...new Set(Object.values(PEOPLE))].forEach(p => fProg.add(new Option(p, p)));
+
+      function fecha(iso) {
+        const [y, m, d] = iso.split('-');
+        return `${d}/${m}/${y}`;
+      }
+
+      // Aplica los filtros y redibuja la tabla y el resumen
+      function render() {
+        const desde = fDesde.value, hasta = fHasta.value;
+        const rangoInvalido = desde && hasta && desde > hasta;
+        $('range-err').hidden = !rangoInvalido;
+
+        visible = ACTS.filter(a =>
+          (!fCol.value || a.who === fCol.value) &&
+          (!fProg.value || PEOPLE[a.who] === fProg.value) &&
+          (!desde || a.date >= desde) &&
+          (!hasta || a.date <= hasta)
+        ).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+        rows.innerHTML = '';
+        visible.forEach(a => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b border-hair last:border-0';
+          const pendiente = a.st === 'Pendiente';
+          tr.innerHTML = `
+            <td class="px-6 py-4 text-ink">${fecha(a.date)}</td>
+            <td class="px-6 py-4 text-warm">${a.time}</td>
+            <td class="px-6 py-4 text-ink">${a.who}</td>
+            <td class="px-6 py-4 text-warm">${PEOPLE[a.who]}</td>
+            <td class="px-6 py-4 text-ink">${a.act}</td>
+            <td class="px-6 py-4"><span class="rounded-full border border-hair px-2 py-0.5 text-[12px] ${pendiente ? 'text-warm' : 'text-ink'}">${a.st}</span></td>`;
+          rows.appendChild(tr);
+        });
+
+        $('empty').hidden = visible.length > 0;
+        $('k-act').textContent = visible.length;
+        $('k-col').textContent = new Set(visible.map(a => a.who)).size;
+        $('k-pen').textContent = visible.filter(a => a.st === 'Pendiente').length;
+      }
+
+      // Descarga CSV con las filas visibles (abre en Excel; UTF-8 con BOM)
+      function downloadCSV() {
+        const esc = v => `"${String(v).replace(/"/g, '""')}"`;
+        const header = ['Fecha', 'Hora', 'Colaborador', 'Programa', 'Actividad', 'Estado'];
+        const lines = [header.map(esc).join(',')].concat(
+          visible.map(a => [fecha(a.date), a.time, a.who, PEOPLE[a.who], a.act, a.st].map(esc).join(','))
+        );
+        const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `agendas_consolidadas_${fDesde.value || 'inicio'}_${fHasta.value || 'fin'}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      [fCol, fProg, fDesde, fHasta].forEach(el => el.addEventListener('change', render));
+      $('btn-csv').addEventListener('click', downloadCSV);
+      $('btn-print').addEventListener('click', () => window.print());
+      $('btn-clear').addEventListener('click', () => {
+        fCol.value = ''; fProg.value = '';
+        fDesde.value = '2026-10-26'; fHasta.value = '2026-11-06';
+        render();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

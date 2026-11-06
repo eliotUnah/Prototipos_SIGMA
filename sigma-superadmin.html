@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Super Admin · SIGMA</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (CDN). En producción, compílelo con la CLI. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tokens de DESIGN__1__1.md (Seline Analytics)
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#fafaf9', paper: '#ffffff', hair: '#e8e6e5', hairmuted: '#d6d3d1',
+            ash: '#a8a29e', warm: '#78716c', ink: '#0c0a09', soot: '#1c1917',
+            cyan: '#3ba6f1', cyanedge: '#3398e1', skywash: '#c1e1f7',
+          },
+          fontFamily: {
+            roobert: ['Inter Tight', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            inter: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          borderRadius: { card: '10px', feature: '16px', input: '6px' },
+          boxShadow: { float: 'rgba(17,12,46,0.12) 0px 12px 45px 0px' },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="min-h-screen bg-canvas font-inter text-warm antialiased">
+
+  <!-- ============ NAVEGACIÓN SUPERIOR ============ -->
+  <header class="sticky top-0 z-20 h-16 border-b border-hair bg-paper">
+    <div class="mx-auto flex h-full max-w-[1200px] items-center justify-between gap-6 px-6">
+      <a href="#" class="flex items-center">
+        <img src="asm-logo.png" alt="Asociación para el Servicio Mundial" class="h-7 w-auto select-none" draggable="false">
+      </a>
+      <nav aria-label="Principal" class="hidden md:block">
+        <ul class="flex items-center gap-2 text-[14px]">
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Agenda</a></li>
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Recursos Humanos</a></li>
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Planilla</a></li>
+          <li><a href="#" aria-current="page" class="flex h-8 items-center px-3 text-ink">Cuentas</a></li>
+        </ul>
+      </nav>
+      <button type="button" class="rounded-full border border-hair px-4 py-2 text-[14px] text-ink hover:bg-canvas">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-[1200px] px-6 pb-24 pt-16 md:px-8">
+
+    <!-- ============ ENCABEZADO ============ -->
+    <section class="flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-[680px]">
+        <span class="inline-flex items-center rounded-full border border-hair px-3 py-1 text-[12px] text-warm">Super Admin · Informática</span>
+        <h1 class="mt-6 font-roobert text-[52px] font-normal leading-[1.12] tracking-[-0.021em] text-ink">
+          Gestión de <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">cuentas</span>
+        </h1>
+        <p class="mt-4 text-[16px] leading-[1.69] tracking-[0.048px] text-warm">Cree, edite, suspenda o reactive cuentas y asigne a cada una uno de los seis roles del sistema.</p>
+      </div>
+      <!-- Única CTA rellena de la vista -->
+      <button type="button" data-open="create" class="rounded-full border border-cyanedge bg-cyan px-4 py-2 text-[14px] font-medium text-paper hover:brightness-95">
+        Nueva cuenta
+      </button>
+    </section>
+
+    <!-- ============ PANEL FLOTANTE CON RESUMEN ============ -->
+    <section class="mt-16" aria-label="Resumen">
+      <div class="rounded-feature bg-paper p-2 shadow-float">
+        <div class="grid grid-cols-1 divide-y divide-hair rounded-card border border-hair sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+          <div class="p-6"><p class="text-[14px] text-warm">Cuentas activas</p><p id="k-act" class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">0</p></div>
+          <div class="p-6"><p class="text-[14px] text-warm">Cuentas suspendidas</p><p id="k-sus" class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">0</p></div>
+          <div class="p-6"><p class="text-[14px] text-warm">Roles definidos</p><p class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">6</p></div>
+          <div class="p-6"><p class="text-[14px] text-warm">Cambios hoy</p><p class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">4</p></div>
+        </div>
+
+        <!-- Pestañas en píldora -->
+        <div class="mt-2 flex flex-wrap gap-2 p-2" role="tablist" aria-label="Secciones">
+          <button type="button" role="tab" id="t-cu" aria-controls="p-cu" aria-selected="true" class="tab rounded-full px-4 py-1.5 text-[14px]">Cuentas</button>
+          <button type="button" role="tab" id="t-ro" aria-controls="p-ro" aria-selected="false" tabindex="-1" class="tab rounded-full px-4 py-1.5 text-[14px]">Roles y accesos</button>
+          <button type="button" role="tab" id="t-au" aria-controls="p-au" aria-selected="false" tabindex="-1" class="tab rounded-full px-4 py-1.5 text-[14px]">Auditoría</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PANEL: CUENTAS (CU-03) ============ -->
+    <section id="p-cu" role="tabpanel" aria-labelledby="t-cu" class="mt-12">
+      <h2 class="font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">Cuentas <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">del sistema</span></h2>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <label for="q" class="sr-only">Buscar cuenta</label>
+        <input id="q" type="search" autocomplete="off" placeholder="Nombre o correo"
+          class="h-10 w-full max-w-sm rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink placeholder:text-warm outline-none focus:ring-2 focus:ring-cyan">
+        <label for="f-rol" class="sr-only">Filtrar por rol</label>
+        <select id="f-rol" class="h-10 rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink outline-none focus:ring-2 focus:ring-cyan">
+          <option value="">Todos los roles</option>
+        </select>
+        <div class="flex gap-2" role="group" aria-label="Filtrar por estado">
+          <button type="button" data-est="todas" aria-pressed="true" class="chip rounded-full border border-hair px-3 py-1.5 text-[14px] text-ink">Todas</button>
+          <button type="button" data-est="activa" aria-pressed="false" class="chip rounded-full border border-hair px-3 py-1.5 text-[14px] text-ink">Activas</button>
+          <button type="button" data-est="suspendida" aria-pressed="false" class="chip rounded-full border border-hair px-3 py-1.5 text-[14px] text-ink">Suspendidas</button>
+        </div>
+      </div>
+
+      <div class="mt-6 overflow-hidden rounded-card border border-hair bg-paper">
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-[14px]">
+            <thead>
+              <tr class="border-b border-hair text-left">
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Nombre</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Correo institucional</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Rol</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Estado</th>
+                <th scope="col" class="px-6 py-4"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <p id="empty" hidden class="px-6 py-8 text-center text-[14px] text-warm">No hay cuentas que coincidan con el filtro.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PANEL: ROLES Y ACCESOS ============ -->
+    <section id="p-ro" role="tabpanel" aria-labelledby="t-ro" hidden class="mt-12">
+      <h2 class="font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">Matriz de <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">roles</span></h2>
+      <p class="mt-2 text-[14px] leading-[1.64] text-warm">Alcance de cada rol según la tabla de accesos acordada con el cliente. L = lectura, E = escritura, P = propia.</p>
+
+      <div class="mt-6 overflow-hidden rounded-card border border-hair bg-paper">
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-[14px]">
+            <thead>
+              <tr class="border-b border-hair text-left">
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Rol</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Cuentas (D5)</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Agenda</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">RR.HH.</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Planilla</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-hair"><td class="px-6 py-4 text-ink">Super Admin · Informática</td><td class="px-6 py-4 text-ink">E</td><td class="px-6 py-4 text-ink">E</td><td class="px-6 py-4 text-ink">E</td><td class="px-6 py-4 text-ink">E</td></tr>
+              <tr class="border-b border-hair"><td class="px-6 py-4 text-ink">Administrador RR.HH.</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-ink">E · P</td><td class="px-6 py-4 text-ink">E</td><td class="px-6 py-4 text-ink">E</td></tr>
+              <tr class="border-b border-hair"><td class="px-6 py-4 text-ink">Dirección Ejecutiva</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-ink">L + observaciones</td><td class="px-6 py-4 text-ink">L</td><td class="px-6 py-4 text-ink">L</td></tr>
+              <tr class="border-b border-hair"><td class="px-6 py-4 text-ink">Administración General</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-ink">L</td><td class="px-6 py-4 text-ink">L</td></tr>
+              <tr class="border-b border-hair"><td class="px-6 py-4 text-ink">Personal Administrativo</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-ink">E · P</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-warm">—</td></tr>
+              <tr><td class="px-6 py-4 text-ink">Contabilidad</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-warm">—</td><td class="px-6 py-4 text-ink">E (carga y consulta)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PANEL: AUDITORÍA ============ -->
+    <section id="p-au" role="tabpanel" aria-labelledby="t-au" hidden class="mt-12">
+      <h2 class="font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">Registro de <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">auditoría</span></h2>
+      <p class="mt-2 text-[14px] leading-[1.64] text-warm">Toda operación de escritura del Super Admin queda registrada. No puede editarse ni eliminarse.</p>
+
+      <div class="mt-6 rounded-card border border-hair bg-paper p-6">
+        <ul class="divide-y divide-hair text-[14px]">
+          <li class="flex flex-wrap justify-between gap-2 py-3"><span class="text-ink">Creó la cuenta csreyes@asm.org con rol Administrador RR.HH.</span><span class="text-warm">05/11/2026 09:12</span></li>
+          <li class="flex flex-wrap justify-between gap-2 py-3"><span class="text-ink">Suspendió la cuenta jamejia@asm.org · motivo: licencia sin goce</span><span class="text-warm">04/11/2026 16:40</span></li>
+          <li class="flex flex-wrap justify-between gap-2 py-3"><span class="text-ink">Cambió el rol de alflores@asm.org a Contabilidad</span><span class="text-warm">03/11/2026 11:05</span></li>
+          <li class="flex flex-wrap justify-between gap-2 py-3"><span class="text-ink">Reactivó la cuenta mflopez@asm.org</span><span class="text-warm">30/10/2026 08:58</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="mt-24 border-t border-hair pt-6 text-[12px] text-warm">SIGMA · Sistema Integrado de Gestión y Manejo Administrativo · Asociación para el Servicio Mundial</footer>
+  </main>
+
+  <!-- ============ MODAL W-03 · alta, edición y suspensión ============ -->
+  <div id="modal" hidden class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="overlay" class="absolute inset-0 bg-ink/40"></div>
+    <div id="dialog" role="dialog" aria-modal="true" aria-labelledby="m-title" aria-describedby="m-desc"
+      class="relative w-full max-w-lg rounded-feature bg-paper p-2 shadow-float">
+      <div class="max-h-[88vh] overflow-y-auto rounded-card border border-hair p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="m-title" class="font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink"></h2>
+            <p id="m-desc" class="mt-2 text-[14px] leading-[1.64] text-warm">Cada cambio queda registrado en la auditoría del sistema.</p>
+          </div>
+          <button type="button" id="btn-close" aria-label="Cerrar" class="rounded-full border border-hair px-3 py-1 text-[14px] text-ink hover:bg-canvas">✕</button>
+        </div>
+
+        <form id="form" class="mt-6 space-y-5" novalidate>
+          <div class="space-y-1.5">
+            <label for="f-name" class="block text-[14px] text-ink">Nombre completo</label>
+            <input id="f-name" type="text" autocomplete="off" placeholder="Nombre y apellidos"
+              class="h-10 w-full rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink placeholder:text-warm outline-none focus:ring-2 focus:ring-cyan">
+            <p id="e-name" hidden class="text-[12px] text-ink">Ingrese el nombre completo.</p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="f-mail" class="block text-[14px] text-ink">Correo institucional</label>
+            <input id="f-mail" type="email" autocomplete="off" placeholder="nombre@asm.org"
+              class="h-10 w-full rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink placeholder:text-warm outline-none focus:ring-2 focus:ring-cyan">
+            <p id="e-mail" hidden class="text-[12px] text-ink">Ingrese un correo institucional válido.</p>
+            <p class="text-[12px] text-ash">Se enviará aquí una contraseña temporal.</p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="f-role" class="block text-[14px] text-ink">Rol</label>
+            <select id="f-role" class="h-10 w-full rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink outline-none focus:ring-2 focus:ring-cyan"></select>
+            <p id="role-desc" class="rounded-card bg-canvas p-3 text-[12px] leading-[1.64] text-warm"></p>
+          </div>
+
+          <fieldset class="space-y-2">
+            <legend class="text-[14px] text-ink">Estado de la cuenta</legend>
+            <div class="flex gap-2" role="group" aria-label="Estado de la cuenta">
+              <button type="button" data-status="activa" aria-pressed="true" class="status rounded-full border border-hair px-4 py-1.5 text-[14px] text-ink">Activa</button>
+              <button type="button" data-status="suspendida" aria-pressed="false" class="status rounded-full border border-hair px-4 py-1.5 text-[14px] text-ink">Suspendida</button>
+            </div>
+          </fieldset>
+
+          <div id="reason-box" hidden class="space-y-1.5">
+            <label for="f-reason" class="block text-[14px] text-ink">Motivo de la suspensión</label>
+            <textarea id="f-reason" rows="3" placeholder="Ej.: licencia sin goce de sueldo"
+              class="w-full rounded-input border border-hairmuted bg-paper px-3 py-2 text-[14px] text-ink placeholder:text-warm outline-none focus:ring-2 focus:ring-cyan"></textarea>
+            <p id="e-reason" hidden class="text-[12px] text-ink">Indique el motivo de la suspensión.</p>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 border-t border-hair pt-5">
+            <button type="button" id="btn-cancel" class="rounded-full border border-hair px-4 py-2 text-[14px] text-ink hover:bg-canvas">Cancelar</button>
+            <button type="submit" class="rounded-full border border-cyanedge bg-cyan px-4 py-2 text-[14px] font-medium text-paper hover:brightness-95">Guardar cuenta</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    [hidden] { display: none !important; }
+    .tab { border: 1px solid #e8e6e5; color: #0c0a09; background: transparent; }
+    .tab[aria-selected="true"], .chip[aria-pressed="true"], .status[aria-pressed="true"] { background: #1c1917; border-color: #1c1917; color: #ffffff; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #3ba6f1; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+
+  <script>
+    (function () {
+      // Seis roles del informe (Unidad I)
+      const ROLES = [
+        { id: 'super_admin',         name: 'Super Admin · Informática', desc: 'Acceso total. Crea, edita y suspende cuentas; escribe en agenda y RR.HH. Todas sus operaciones quedan auditadas.' },
+        { id: 'administrador_rrhh',  name: 'Administrador RR.HH.',      desc: 'Crea y edita su propia agenda y tiene acceso completo a RR.HH.' },
+        { id: 'direccion_ejecutiva', name: 'Dirección Ejecutiva',       desc: 'Consulta todas las agendas e informes y registra observaciones a los informes mensuales. RR.HH. en solo lectura.' },
+        { id: 'admon_general',       name: 'Administración General',    desc: 'Consulta RR.HH. y planilla en solo lectura y descarga. Sin acceso a agenda.' },
+        { id: 'agenda_usuario',      name: 'Personal Administrativo',   desc: 'Registra su agenda semanal y carga sus informes mensuales. Sin acceso a RR.HH.' },
+        { id: 'contabilidad',        name: 'Contabilidad',              desc: 'Carga y consulta la planilla quincenal. No consulta expedientes ni agendas.' },
+      ];
+
+      // Cuentas de ejemplo (nombres del informe y de la página de RR.HH.)
+      const USERS = [
+        { name: 'Cristian Carrasco',    mail: 'ccarrasco@asm.org', role: 'super_admin',         status: 'activa' },
+        { name: 'Nicole Aguilar',       mail: 'naguilar@asm.org',  role: 'administrador_rrhh',  status: 'activa' },
+        { name: 'María Fernanda López', mail: 'mflopez@asm.org',   role: 'admon_general',       status: 'activa' },
+        { name: 'Carla Sofía Reyes',    mail: 'csreyes@asm.org',   role: 'agenda_usuario',      status: 'activa' },
+        { name: 'José Antonio Mejía',   mail: 'jamejia@asm.org',   role: 'agenda_usuario',      status: 'suspendida' },
+        { name: 'Ana Lucía Flores',     mail: 'alflores@asm.org',  role: 'contabilidad',        status: 'activa' },
+      ];
+
+      const $ = id => document.getElementById(id);
+      const roleName = id => ROLES.find(r => r.id === id).name;
+      const modal = $('modal'), dialog = $('dialog'), select = $('f-role'), desc = $('role-desc');
+      const reasonBox = $('reason-box'), rows = $('rows');
+      let status = 'activa', lastFocus = null, est = 'todas';
+
+      // Selectores de rol: en el modal y en el filtro
+      ROLES.forEach(r => {
+        select.add(new Option(r.name, r.id));
+        $('f-rol').add(new Option(r.name, r.id));
+      });
+      select.addEventListener('change', () => desc.textContent = ROLES.find(r => r.id === select.value).desc);
+
+      // Tabla de cuentas con filtros
+      function renderRows() {
+        const q = $('q').value.trim().toLowerCase();
+        const rol = $('f-rol').value;
+        let visible = 0;
+        rows.innerHTML = '';
+        USERS.forEach((u, i) => {
+          const ok = (est === 'todas' || u.status === est) &&
+                     (!rol || u.role === rol) &&
+                     (u.name + ' ' + u.mail).toLowerCase().includes(q);
+          if (!ok) return;
+          visible++;
+          const activa = u.status === 'activa';
+          const tr = document.createElement('tr');
+          tr.className = 'border-b border-hair last:border-0';
+          tr.innerHTML = `
+            <td class="px-6 py-4 text-ink">${u.name}</td>
+            <td class="px-6 py-4 text-warm">${u.mail}</td>
+            <td class="px-6 py-4 text-ink">${roleName(u.role)}</td>
+            <td class="px-6 py-4"><span class="rounded-full border border-hair px-2 py-0.5 text-[12px] ${activa ? 'text-ink' : 'text-warm'}">${activa ? 'Activa' : 'Suspendida'}</span></td>
+            <td class="px-6 py-4">
+              <div class="flex justify-end gap-2">
+                <button type="button" data-open="edit" data-index="${i}" class="rounded-full border border-hair px-3 py-1 text-[14px] text-ink hover:bg-canvas">Editar</button>
+                <button type="button" data-toggle="${i}" class="rounded-full border border-hair px-3 py-1 text-[14px] text-ink hover:bg-canvas">${activa ? 'Suspender' : 'Reactivar'}</button>
+              </div>
+            </td>`;
+          rows.appendChild(tr);
+        });
+        $('empty').hidden = visible > 0;
+        $('k-act').textContent = USERS.filter(u => u.status === 'activa').length;
+        $('k-sus').textContent = USERS.filter(u => u.status === 'suspendida').length;
+      }
+
+      function setStatus(s) {
+        status = s;
+        document.querySelectorAll('.status').forEach(b => b.setAttribute('aria-pressed', b.dataset.status === s));
+        reasonBox.hidden = s !== 'suspendida';
+      }
+      document.querySelectorAll('.status').forEach(b => b.addEventListener('click', () => setStatus(b.dataset.status)));
+
+      // Abre el modal: "create", "edit" o "suspend" (edición con estado suspendida)
+      function open(mode, index) {
+        const u = index != null ? USERS[index] : null;
+        const sub = document.createElement('span');
+        sub.className = 'rounded bg-skywash px-2 py-0.5 text-cyanedge';
+        sub.textContent = mode === 'create' ? 'cuenta' : 'cuenta';
+        $('m-title').textContent = mode === 'create' ? 'Nueva ' : 'Editar ';
+        $('m-title').appendChild(sub);
+
+        $('f-name').value = u ? u.name : '';
+        $('f-mail').value = u ? u.mail : '';
+        $('f-reason').value = '';
+        select.value = u ? u.role : ROLES[0].id;
+        desc.textContent = ROLES.find(r => r.id === select.value).desc;
+        setStatus(u ? u.status : 'activa');
+        ['e-name', 'e-mail', 'e-reason'].forEach(id => $(id).hidden = true);
+
+        lastFocus = document.activeElement;
+        modal.hidden = false;
+        $('f-name').focus();
+      }
+
+      function close() {
+        modal.hidden = true;
+        if (lastFocus) lastFocus.focus();
+      }
+
+      // Acciones: nueva cuenta, editar, suspender/reactivar desde la fila
+      document.addEventListener('click', e => {
+        const open_ = e.target.closest('[data-open]');
+        if (open_) return open(open_.dataset.open, open_.dataset.index != null ? Number(open_.dataset.index) : null);
+        const tg = e.target.closest('[data-toggle]');
+        if (tg) {
+          const u = USERS[Number(tg.dataset.toggle)];
+          u.status = u.status === 'activa' ? 'suspendida' : 'activa';
+          renderRows();
+        }
+      });
+
+      $('btn-close').addEventListener('click', close);
+      $('btn-cancel').addEventListener('click', close);
+      $('overlay').addEventListener('click', close);
+
+      document.addEventListener('keydown', e => {
+        if (modal.hidden) return;
+        if (e.key === 'Escape') { close(); return; }
+        if (e.key === 'Tab') {
+          const f = dialog.querySelectorAll('button, input, select, textarea');
+          const first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+          else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+        }
+      });
+
+      // Validación en cliente (visual; no guarda datos)
+      $('form').addEventListener('submit', e => {
+        e.preventDefault();
+        ['e-name', 'e-mail', 'e-reason'].forEach(id => $(id).hidden = true);
+        let ok = true;
+        const fail = id => { $(id).hidden = false; ok = false; };
+        if ($('f-name').value.trim().length < 2) fail('e-name');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('f-mail').value.trim())) fail('e-mail');
+        if (status === 'suspendida' && !$('f-reason').value.trim()) fail('e-reason');
+        if (ok) close();
+      });
+
+      // Pestañas (WAI-ARIA con flechas)
+      const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+      function activate(tab) {
+        tabs.forEach(t => {
+          const on = t === tab;
+          t.setAttribute('aria-selected', on);
+          t.tabIndex = on ? 0 : -1;
+          document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+        });
+        tab.focus();
+      }
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => activate(tab));
+        tab.addEventListener('keydown', e => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            activate(tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length]);
+            e.preventDefault();
+          }
+        });
+      });
+
+      // Filtros de estado y búsqueda
+      document.querySelectorAll('[data-est]').forEach(b => b.addEventListener('click', () => {
+        est = b.dataset.est;
+        document.querySelectorAll('[data-est]').forEach(x => x.setAttribute('aria-pressed', x === b));
+        renderRows();
+      }));
+      $('q').addEventListener('input', renderRows);
+      $('f-rol').addEventListener('change', renderRows);
+
+      modal.hidden = true;
+      renderRows();
+    })();
+  </script>
+</body>
+</html>

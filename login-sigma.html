@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iniciar sesión · Asociación para el Servicio Mundial</title>
+
+  <!-- Tailwind CSS (CDN). En producción, compílelo con la CLI. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asmo: {
+              300: '#55CCFF', // Trazos claros del emblema, anillo de foco
+              500: '#0BA0F5', // Azul de marca (fondo)
+              700: '#0770AD', // Botón principal y enlaces (contraste AA con blanco)
+              800: '#055E8F', // Hover y estado activo
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="min-h-screen bg-asmo-500 font-sans antialiased">
+
+  <main class="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
+
+    <!-- Emblema de fondo (decorativo) -->
+    <img src="asmo-emblema.png" alt=""
+      class="pointer-events-none absolute left-1/2 top-1/2 w-[85%] max-w-4xl -translate-x-1/2 -translate-y-1/2 select-none"
+      draggable="false"
+      aria-hidden="true">
+
+    <!-- ============ TARJETA DE LOGIN (centrada) ============ -->
+    <div class="relative z-10 w-full max-w-sm">
+
+      <!-- Tarjeta de login: el logo va aquí, sobre blanco, para que su texto negro conserve el contraste -->
+      <div class="relative w-full overflow-hidden rounded-2xl bg-white p-8 shadow-2xl shadow-black/40 ring-1 ring-slate-200">
+
+        <!-- Encabezado: logotipo oficial + título -->
+        <header class="mb-6 flex flex-col items-center space-y-5">
+          <img src="asm-logo.png"
+            alt="Asociación para el Servicio Mundial"
+            class="h-auto w-56 max-w-full select-none"
+            draggable="false">
+          <div class="flex flex-col items-center space-y-1 pt-2">
+            <h1 class="text-xl font-bold tracking-tight text-slate-900">Iniciar sesión en ASMO</h1>
+            <p class="text-center text-sm text-slate-600">Introduce tus credenciales para continuar</p>
+          </div>
+        </header>
+
+        <!-- Formulario (solo visual) -->
+        <form class="w-full space-y-4" action="#" method="post">
+
+          <!-- Correo electrónico -->
+          <div class="space-y-1.5">
+            <label for="email" class="block text-sm font-medium text-slate-700">Correo electrónico</label>
+            <input
+              id="email" name="email" type="email" autocomplete="email" required
+              placeholder="tu@correo.com"
+              class="w-full rounded-lg border border-slate-400 bg-slate-50 px-3.5 py-2.5 text-base text-slate-900 outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-asmo-700 focus:bg-white focus:ring-4 focus:ring-asmo-300/40"
+            />
+          </div>
+
+          <!-- Contraseña -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label for="password" class="block text-sm font-medium text-slate-700">Contraseña</label>
+              <a href="#" class="text-sm font-medium text-asmo-700 underline-offset-4 hover:text-asmo-800 hover:underline focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-asmo-300">¿Olvidaste tu contraseña?</a>
+            </div>
+            <input
+              id="password" name="password" type="password" autocomplete="current-password" required
+              placeholder="••••••••"
+              class="w-full rounded-lg border border-slate-400 bg-slate-50 px-3.5 py-2.5 text-base text-slate-900 outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-asmo-700 focus:bg-white focus:ring-4 focus:ring-asmo-300/40"
+            />
+          </div>
+
+          <!-- Mantener sesión -->
+          <div class="flex items-center py-1">
+            <input
+              id="remember" name="remember" type="checkbox"
+              class="h-4 w-4 cursor-pointer rounded border-slate-400 accent-asmo-700 focus:ring-asmo-300"
+            />
+            <label for="remember" class="ml-2 cursor-pointer select-none text-sm text-slate-700">Mantener sesión iniciada</label>
+          </div>
+
+          <!-- Botón principal -->
+          <button
+            id="login" name="login" type="submit"
+            class="w-full rounded-lg bg-asmo-700 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-asmo-700/30 transition-all duration-200 hover:bg-asmo-800 active:scale-[0.99] active:bg-asmo-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-asmo-300"
+          >
+            Iniciar sesión
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>

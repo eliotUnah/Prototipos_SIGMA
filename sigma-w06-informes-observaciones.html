@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Informes mensuales · SIGMA</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (CDN). En producción, compílelo con la CLI. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tokens de DESIGN__1__1.md (Seline Analytics)
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#fafaf9', paper: '#ffffff', hair: '#e8e6e5', hairmuted: '#d6d3d1',
+            ash: '#a8a29e', warm: '#78716c', ink: '#0c0a09', soot: '#1c1917',
+            cyan: '#3ba6f1', cyanedge: '#3398e1', skywash: '#c1e1f7',
+          },
+          fontFamily: {
+            roobert: ['Inter Tight', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            inter: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          borderRadius: { card: '10px', feature: '16px', input: '6px' },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="min-h-screen bg-canvas font-inter text-warm antialiased">
+
+  <!-- ============ NAVEGACIÓN SUPERIOR ============ -->
+  <header class="sticky top-0 z-20 h-16 border-b border-hair bg-paper">
+    <div class="mx-auto flex h-full max-w-[1200px] items-center justify-between gap-6 px-6">
+      <a href="#" class="flex items-center">
+        <img src="asm-logo.png" alt="Asociación para el Servicio Mundial" class="h-7 w-auto select-none" draggable="false">
+      </a>
+      <nav aria-label="Principal" class="hidden md:block">
+        <ul class="flex items-center gap-2 text-[14px]">
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Agenda</a></li>
+          <li><a href="#" aria-current="page" class="flex h-8 items-center px-3 text-ink">Informes</a></li>
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Reportes</a></li>
+        </ul>
+      </nav>
+      <button type="button" class="rounded-full border border-hair px-4 py-2 text-[14px] text-ink hover:bg-canvas">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-[1200px] px-6 pb-24 pt-16 md:px-8">
+
+    <!-- ============ ENCABEZADO ============ -->
+    <section class="max-w-[720px]">
+      <span class="inline-flex items-center rounded-full border border-hair px-3 py-1 text-[12px] text-warm">CU-06 · CU-07</span>
+      <h1 class="mt-6 font-roobert text-[52px] font-normal leading-[1.12] tracking-[-0.021em] text-ink">
+        Informes <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">mensuales</span>
+      </h1>
+      <p class="mt-4 text-[16px] leading-[1.69] tracking-[0.048px] text-warm">El personal carga su informe en PDF y Dirección Ejecutiva lo revisa, registra observaciones y consulta el historial de notas.</p>
+    </section>
+
+    <!-- ============ SELECTOR DE ROL ============ -->
+    <div class="mt-10 flex flex-wrap items-center gap-3">
+      <span class="text-[14px] text-warm">Vista de:</span>
+      <div class="flex flex-wrap gap-2" role="tablist" aria-label="Rol">
+        <button type="button" role="tab" id="r-carga" aria-controls="v-main" aria-selected="true" data-role="carga" class="tab rounded-full px-4 py-1.5 text-[14px]">Personal Administrativo · carga</button>
+        <button type="button" role="tab" id="r-rev" aria-selected="false" tabindex="-1" data-role="revision" class="tab rounded-full px-4 py-1.5 text-[14px]">Dirección Ejecutiva · revisión</button>
+      </div>
+    </div>
+
+    <!-- ============ VISTA DIVIDIDA ============ -->
+    <div id="v-main" class="mt-8 grid gap-6 lg:grid-cols-12">
+
+      <!-- Columna izquierda: informes y carga -->
+      <aside class="space-y-6 lg:col-span-4">
+
+        <section class="rounded-card border border-hair bg-paper p-6" aria-labelledby="h-list">
+          <h2 id="h-list" class="font-roobert text-[20px] leading-[1.2] tracking-[-0.1px] text-ink">Informes cargados</h2>
+          <ul id="list" class="mt-4 divide-y divide-hair"></ul>
+        </section>
+
+        <!-- Solo en vista de carga (CU-06) -->
+        <section id="panel-carga" class="rounded-card border border-hair bg-paper p-6" aria-labelledby="h-up">
+          <h2 id="h-up" class="font-roobert text-[20px] leading-[1.2] tracking-[-0.1px] text-ink">Cargar informe</h2>
+          <p class="mt-1 text-[14px] leading-[1.64] text-warm">Solo archivos PDF de hasta 10 MB.</p>
+
+          <div class="mt-4 space-y-1.5">
+            <label for="f-mes" class="block text-[14px] text-ink">Mes del informe</label>
+            <select id="f-mes" class="h-10 w-full rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink outline-none focus:ring-2 focus:ring-cyan">
+              <option>Noviembre 2026</option>
+              <option>Diciembre 2026</option>
+              <option>Enero 2027</option>
+            </select>
+          </div>
+
+          <!-- Zona de arrastre: borde discontinuo, sin sombra -->
+          <div id="drop" class="mt-4 flex flex-col items-start gap-3 rounded-card border border-dashed border-hairmuted p-5 transition-colors">
+            <p class="text-[14px] text-ink">Arrastre el PDF aquí</p>
+            <button type="button" id="btn-pick" class="rounded-full border border-hair px-3 py-1.5 text-[14px] text-ink hover:bg-canvas">Seleccionar archivo</button>
+            <input id="file" type="file" accept="application/pdf,.pdf" hidden>
+            <p id="file-name" class="text-[12px] text-warm">Ningún archivo seleccionado</p>
+            <p id="e-file" hidden class="text-[12px] text-ink"></p>
+          </div>
+
+          <button type="button" id="btn-upload" class="mt-5 w-full rounded-full border border-cyanedge bg-cyan px-4 py-2 text-[14px] font-medium text-paper hover:brightness-95">Cargar informe</button>
+        </section>
+      </aside>
+
+      <!-- Columna derecha: visor y observaciones -->
+      <section class="space-y-6 lg:col-span-8" aria-label="Visor e historial">
+
+        <div class="rounded-card border border-hair bg-paper p-2">
+          <div class="flex items-center justify-between gap-4 px-4 py-3">
+            <h2 id="v-title" class="font-roobert text-[20px] leading-[1.2] tracking-[-0.1px] text-ink">Seleccione un informe</h2>
+            <span id="v-state" class="rounded-full border border-hair px-2 py-0.5 text-[12px] text-warm"></span>
+          </div>
+          <div class="overflow-hidden rounded-card border border-hair bg-canvas">
+            <iframe id="viewer" title="Vista previa del informe" class="h-[460px] w-full" hidden></iframe>
+            <div id="viewer-empty" class="flex h-[460px] items-center justify-center p-8 text-center text-[14px] text-warm">
+              Seleccione un informe de la lista para visualizarlo.
+            </div>
+          </div>
+        </div>
+
+        <!-- Observaciones (CU-07): solo Dirección Ejecutiva registra -->
+        <section id="panel-rev" class="rounded-card border border-hair bg-paper p-6" aria-labelledby="h-obs">
+          <h2 id="h-obs" class="font-roobert text-[20px] leading-[1.2] tracking-[-0.1px] text-ink">Registrar observación</h2>
+          <form id="form-obs" class="mt-4 space-y-3" novalidate>
+            <label for="obs" class="block text-[14px] text-ink">Observación para el colaborador</label>
+            <textarea id="obs" rows="3" placeholder="Escriba la observación sobre este informe"
+              class="w-full rounded-input border border-hairmuted bg-paper px-3 py-2 text-[14px] text-ink placeholder:text-warm outline-none focus:ring-2 focus:ring-cyan"></textarea>
+            <p id="e-obs" hidden class="text-[12px] text-ink">Escriba una observación antes de guardar.</p>
+            <div class="flex justify-end">
+              <button type="submit" id="btn-obs" class="rounded-full border border-cyanedge bg-cyan px-4 py-2 text-[14px] font-medium text-paper hover:brightness-95">Guardar observación</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Historial de notas: visible en ambas vistas -->
+        <section class="rounded-card border border-hair bg-paper p-6" aria-labelledby="h-hist">
+          <div class="flex items-center justify-between gap-4">
+            <h2 id="h-hist" class="font-roobert text-[20px] leading-[1.2] tracking-[-0.1px] text-ink">Historial de observaciones</h2>
+            <span id="hist-count" class="text-[12px] text-warm"></span>
+          </div>
+          <ol id="hist" class="mt-4 divide-y divide-hair text-[14px]"></ol>
+          <p id="hist-empty" hidden class="py-6 text-center text-warm">Este informe aún no tiene observaciones.</p>
+        </section>
+      </section>
+    </div>
+
+    <footer class="mt-24 border-t border-hair pt-6 text-[12px] text-warm">SIGMA · Sistema Integrado de Gestión y Manejo Administrativo · Asociación para el Servicio Mundial</footer>
+  </main>
+
+  <style>
+    .tab { border: 1px solid #e8e6e5; color: #0c0a09; background: transparent; }
+    .tab[aria-selected="true"] { background: #1c1917; border-color: #1c1917; color: #ffffff; }
+    .item[aria-pressed="true"] { background: #f0f3f8; }
+    #drop.over { border-color: #0c0a09; }
+    [hidden] { display: none !important; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #3ba6f1; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+
+  <script>
+    (function () {
+      const $ = id => document.getElementById(id);
+      const MAX_BYTES = 10 * 1024 * 1024;
+
+      // Informes de ejemplo (nombres de meses según el calendario del proyecto)
+      const INFORMES = [
+        { id: 1, mes: 'Octubre 2026',    cargado: '31/10/2026', url: null, obs: [{ fecha: '31/10/2026', texto: 'Faltan los soportes de la capacitación de octubre.' }] },
+        { id: 2, mes: 'Septiembre 2026', cargado: '30/09/2026', url: null, obs: [] },
+      ];
+      let sel = 1, role = 'carga', pending = null, nextId = 3;
+
+      const current = () => INFORMES.find(i => i.id === sel);
+
+      // ---------- Lista de informes ----------
+      function renderList() {
+        const ul = $('list');
+        ul.innerHTML = '';
+        INFORMES.forEach(i => {
+          const li = document.createElement('li');
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'item flex w-full items-start justify-between gap-3 rounded-input px-2 py-3 text-left hover:bg-canvas';
+          b.setAttribute('aria-pressed', i.id === sel);
+          b.innerHTML = `<span><span class="block text-[14px] font-medium text-ink">Informe de ${i.mes.toLowerCase()}</span><span class="block text-[12px] text-warm">Cargado ${i.cargado}</span></span><span class="rounded-full border border-hair px-2 py-0.5 text-[12px] text-warm">${i.obs.length} obs.</span>`;
+          b.addEventListener('click', () => { sel = i.id; renderAll(); });
+          li.appendChild(b);
+          ul.appendChild(li);
+        });
+      }
+
+      // ---------- Visor ----------
+      function renderViewer() {
+        const i = current();
+        $('v-title').textContent = i ? 'Informe de ' + i.mes.toLowerCase() : 'Seleccione un informe';
+        $('v-state').textContent = i ? 'Cargado ' + i.cargado : '';
+        if (i && i.url) {
+          $('viewer').src = i.url;
+          $('viewer').hidden = false;
+          $('viewer-empty').hidden = true;
+        } else {
+          $('viewer').removeAttribute('src');
+          $('viewer').hidden = true;
+          $('viewer-empty').hidden = false;
+          $('viewer-empty').textContent = i
+            ? 'Vista previa no disponible: este informe es de ejemplo. Los informes cargados sí se muestran aquí.'
+            : 'Seleccione un informe de la lista para visualizarlo.';
+        }
+      }
+
+      // ---------- Historial de observaciones (CU-07) ----------
+      function renderHist() {
+        const i = current();
+        const list = i ? i.obs : [];
+        const ol = $('hist');
+        ol.innerHTML = '';
+        list.forEach(o => {
+          const li = document.createElement('li');
+          li.className = 'flex flex-col gap-1 py-3';
+          const meta = document.createElement('span');
+          meta.className = 'text-[12px] text-warm';
+          meta.textContent = `${o.fecha} · Dirección Ejecutiva`;
+          const txt = document.createElement('span');
+          txt.className = 'text-ink';
+          txt.textContent = o.texto;
+          li.append(meta, txt);
+          ol.appendChild(li);
+        });
+        $('hist-empty').hidden = list.length > 0;
+        $('hist-count').textContent = list.length ? `${list.length} ${list.length === 1 ? 'nota' : 'notas'}` : '';
+      }
+
+      // ---------- Cambio de rol: muestra u oculta paneles ----------
+      function renderRole() {
+        $('panel-carga').hidden = role !== 'carga';
+        $('panel-rev').hidden = role !== 'revision';
+        document.querySelectorAll('[data-role]').forEach(t => {
+          const on = t.dataset.role === role;
+          t.setAttribute('aria-selected', on);
+          t.tabIndex = on ? 0 : -1;
+        });
+      }
+      document.querySelectorAll('[data-role]').forEach(t => t.addEventListener('click', () => {
+        role = t.dataset.role; renderRole(); t.focus();
+      }));
+
+      function renderAll() { renderList(); renderViewer(); renderHist(); renderRole(); }
+
+      // ---------- Carga de PDF (CU-06) ----------
+      function setFile(f) {
+        const err = $('e-file');
+        err.hidden = true;
+        if (!f) { pending = null; $('file-name').textContent = 'Ningún archivo seleccionado'; return; }
+        if (f.type !== 'application/pdf' && !/\.pdf$/i.test(f.name)) {
+          pending = null;
+          err.textContent = 'El archivo debe ser un PDF.';
+          err.hidden = false;
+          return;
+        }
+        if (f.size > MAX_BYTES) {
+          pending = null;
+          err.textContent = 'El archivo supera el límite de 10 MB.';
+          err.hidden = false;
+          return;
+        }
+        pending = f;
+        $('file-name').textContent = `${f.name} · ${(f.size / 1024 / 1024).toFixed(2)} MB`;
+      }
+
+      $('btn-pick').addEventListener('click', () => $('file').click());
+      $('file').addEventListener('change', e => setFile(e.target.files[0]));
+
+      const drop = $('drop');
+      ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+      ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+      drop.addEventListener('drop', e => setFile(e.dataTransfer.files[0]));
+
+      $('btn-upload').addEventListener('click', () => {
+        const err = $('e-file');
+        if (!pending) {
+          err.textContent = 'Seleccione un archivo PDF antes de cargar.';
+          err.hidden = false;
+          return;
+        }
+        const nuevo = {
+          id: nextId++,
+          mes: $('f-mes').value,
+          cargado: '05/11/2026',
+          url: URL.createObjectURL(pending),
+          obs: [],
+        };
+        INFORMES.unshift(nuevo);
+        sel = nuevo.id;
+        pending = null;
+        $('file').value = '';
+        $('file-name').textContent = 'Ningún archivo seleccionado';
+        err.hidden = true;
+        renderAll();
+      });
+
+      // ---------- Observación (CU-07) ----------
+      $('form-obs').addEventListener('submit', e => {
+        e.preventDefault();
+        const txt = $('obs').value.trim();
+        $('e-obs').hidden = txt.length > 0;
+        if (!txt) return;
+        const i = current();
+        if (!i) return;
+        i.obs.push({ fecha: '05/11/2026', texto: txt });
+        $('obs').value = '';
+        renderAll();
+      });
+
+      renderAll();
+    })();
+  </script>
+</body>
+</html>

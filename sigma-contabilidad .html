@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contabilidad · SIGMA</title>
+
+  <!-- Roobert no es gratuita: sustituto oficial del documento = Inter Tight. Cuerpo: Inter. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (CDN). En producción, compílelo con la CLI. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tokens de DESIGN__1__1.md (Seline Analytics)
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#fafaf9',      // Fondo de página (cálido, nunca #ffffff)
+            paper: '#ffffff',       // Superficie de tarjeta
+            hair: '#e8e6e5',        // Bordes de 1px: la estructura principal
+            hairmuted: '#d6d3d1',   // Bordes de inputs
+            ash: '#a8a29e',         // Iconos y texto muy secundario
+            warm: '#78716c',        // Texto secundario y de cuerpo
+            ink: '#0c0a09',         // Títulos y texto principal
+            soot: '#1c1917',        // Fondo del tab activo
+            cyan: '#3ba6f1',        // Único acento: CTA principal
+            cyanedge: '#3398e1',    // Texto del resaltado y borde de la CTA
+            skywash: '#c1e1f7',     // Fondo del resaltado en títulos
+          },
+          fontFamily: {
+            roobert: ['Inter Tight', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            inter: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          borderRadius: { card: '10px', feature: '16px', input: '6px' },
+          boxShadow: {
+            // Solo el panel flotante principal lleva sombra profunda
+            float: 'rgba(17,12,46,0.12) 0px 12px 45px 0px',
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="min-h-screen bg-canvas font-inter text-warm antialiased">
+
+  <!-- ============ NAVEGACIÓN SUPERIOR (64px, sticky) ============ -->
+  <header class="sticky top-0 z-20 h-16 border-b border-hair bg-paper">
+    <div class="mx-auto flex h-full max-w-[1200px] items-center justify-between gap-6 px-6">
+      <a href="#" class="flex items-center">
+        <img src="asm-logo.png" alt="Asociación para el Servicio Mundial" class="h-7 w-auto select-none" draggable="false">
+      </a>
+
+      <nav aria-label="Principal" class="hidden md:block">
+        <ul class="flex items-center gap-2 text-[14px]">
+          <li><a href="#" aria-current="page" class="flex h-8 items-center px-3 text-ink">Planilla</a></li>
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Personal</a></li>
+          <li><a href="#" class="flex h-8 items-center px-3 text-warm hover:text-ink">Reportes</a></li>
+        </ul>
+      </nav>
+
+      <!-- Acción secundaria: ghost pill (la CTA azul va en el contenido) -->
+      <button type="button" class="rounded-full border border-hair bg-transparent px-4 py-2 text-[14px] text-ink hover:bg-canvas">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-[1200px] px-6 pb-24 pt-16 md:px-8">
+
+    <!-- ============ ENCABEZADO (display 52px con un solo resaltado) ============ -->
+    <section class="max-w-[760px]">
+      <span class="inline-flex items-center gap-1.5 rounded-full border border-hair px-3 py-1 text-[12px] text-warm">
+        <svg class="h-3.5 w-3.5 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+        </svg>
+        Solo lectura
+      </span>
+      <h1 class="mt-6 font-roobert text-[52px] font-normal leading-[1.12] tracking-[-0.021em] text-ink">
+        Planilla quincenal, <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">lista para revisar</span>
+      </h1>
+      <p class="mt-4 max-w-[560px] text-[16px] leading-[1.69] tracking-[0.048px] text-warm">
+        Consulte la planilla final pre-calculada del 1 al 15 de noviembre de 2026. Los cambios los realiza Coordinación de RR.HH.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-2">
+        <!-- Única CTA rellena de la vista -->
+        <button type="button" class="rounded-full border border-cyanedge bg-cyan px-4 py-2 text-[14px] font-medium text-paper hover:brightness-95">
+          Consultar planilla
+        </button>
+        <button type="button" data-goto="p-bus" class="rounded-full border border-hair px-4 py-2 text-[14px] text-ink hover:bg-paper">
+          Buscar personal
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ PANEL FLOTANTE CON RESUMEN (único elemento con sombra profunda) ============ -->
+    <section class="mt-16" aria-label="Resumen de la planilla">
+      <div class="rounded-feature bg-paper p-2 shadow-float">
+        <div class="grid grid-cols-1 divide-y divide-hair rounded-card border border-hair sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+          <div class="p-6">
+            <p class="text-[14px] text-warm">Salario bruto</p>
+            <p class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">L 1,250,000</p>
+          </div>
+          <div class="p-6">
+            <p class="text-[14px] text-warm">Deducciones de ley</p>
+            <p class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">L 75,000</p>
+          </div>
+          <div class="p-6">
+            <p class="text-[14px] text-warm">Neto a pagar</p>
+            <p class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">L 1,175,000</p>
+          </div>
+          <div class="p-6">
+            <p class="text-[14px] text-warm">Empleados incluidos</p>
+            <p class="mt-2 font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">132</p>
+          </div>
+        </div>
+
+        <!-- Pestañas en píldora: cambian la vista de abajo -->
+        <div class="mt-2 flex flex-wrap gap-2 p-2" role="tablist" aria-label="Secciones">
+          <button type="button" role="tab" id="t-det" aria-controls="p-det" aria-selected="true" class="tab rounded-full px-4 py-1.5 text-[14px]">Detalle</button>
+          <button type="button" role="tab" id="t-ded" aria-controls="p-ded" aria-selected="false" tabindex="-1" class="tab rounded-full px-4 py-1.5 text-[14px]">Deducciones</button>
+          <button type="button" role="tab" id="t-bus" aria-controls="p-bus" aria-selected="false" tabindex="-1" class="tab rounded-full px-4 py-1.5 text-[14px]">Buscar personal</button>
+        </div>
+      </div>
+      <p class="mt-3 text-[12px] text-ash">Montos de ejemplo. Los valores finales se muestran tras el cálculo automático del ciclo.</p>
+    </section>
+
+    <!-- ============ PANEL: DETALLE ============ -->
+    <section id="p-det" role="tabpanel" aria-labelledby="t-det" class="mt-12">
+      <h2 class="font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">Detalle de la <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">quincena</span></h2>
+      <p class="mt-2 text-[14px] leading-[1.64] text-warm">Desglose del salario bruto, deducciones y neto del ciclo.</p>
+
+      <div class="mt-6 rounded-card border border-hair bg-paper p-6">
+        <dl class="divide-y divide-hair text-[14px]">
+          <div class="flex justify-between py-3"><dt class="text-warm">Salario bruto</dt><dd class="text-ink">L 1,250,000.00</dd></div>
+          <div class="flex justify-between py-3"><dt class="text-warm">Bonificaciones</dt><dd class="text-ink">L 0.00</dd></div>
+          <div class="flex justify-between py-3"><dt class="text-warm">Deducciones de ley</dt><dd class="text-ink">− L 75,000.00</dd></div>
+          <div class="flex justify-between py-3 font-medium"><dt class="text-ink">Neto a pagar</dt><dd class="text-ink">L 1,175,000.00</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ============ PANEL: DEDUCCIONES ============ -->
+    <section id="p-ded" role="tabpanel" aria-labelledby="t-ded" hidden class="mt-12">
+      <h2 class="font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">Deducciones de <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">ley</span></h2>
+      <p class="mt-2 text-[14px] leading-[1.64] text-warm">Tasas aplicadas según los parámetros vigentes de cada ente.</p>
+
+      <div class="mt-6 overflow-hidden rounded-card border border-hair bg-paper">
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-[14px]">
+            <thead>
+              <tr class="border-b border-hair text-left">
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Concepto</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Ente</th>
+                <th scope="col" class="px-6 py-4 text-right font-medium text-warm">Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-hair"><td class="px-6 py-4 text-ink">IHSS</td><td class="px-6 py-4 text-warm">Seguro Social</td><td class="px-6 py-4 text-right text-ink">L 43,750.00</td></tr>
+              <tr class="border-b border-hair"><td class="px-6 py-4 text-ink">RAP</td><td class="px-6 py-4 text-warm">Aportaciones Privadas</td><td class="px-6 py-4 text-right text-ink">L 31,250.00</td></tr>
+              <tr><td class="px-6 py-4 text-ink">INPREMA</td><td class="px-6 py-4 text-warm">Solo personal de magisterio</td><td class="px-6 py-4 text-right text-ash">No aplica</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PANEL: BUSCAR PERSONAL (CU-11, solo lectura) ============ -->
+    <section id="p-bus" role="tabpanel" aria-labelledby="t-bus" hidden class="mt-12">
+      <h2 class="font-roobert text-[32px] leading-[1.25] tracking-[-0.025em] text-ink">Buscar <span class="rounded bg-skywash px-2 py-0.5 text-cyanedge">personal</span></h2>
+      <p class="mt-2 text-[14px] leading-[1.64] text-warm">Consulte expedientes, planillas o reportes sin modificarlos.</p>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <label for="q" class="sr-only">Buscar persona</label>
+        <input id="q" type="search" autocomplete="off" placeholder="Nombre, cargo o programa"
+          class="h-10 w-full max-w-md rounded-input border border-hairmuted bg-paper px-3 text-[14px] text-ink placeholder:text-warm outline-none focus:ring-2 focus:ring-cyan">
+
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por área">
+          <button type="button" data-filter="todos" aria-pressed="true" class="chip rounded-full border border-hair px-3 py-1.5 text-[14px] text-ink">Todos</button>
+          <button type="button" data-filter="expediente" aria-pressed="false" class="chip rounded-full border border-hair px-3 py-1.5 text-[14px] text-ink">Expediente</button>
+          <button type="button" data-filter="planilla" aria-pressed="false" class="chip rounded-full border border-hair px-3 py-1.5 text-[14px] text-ink">Planilla</button>
+          <button type="button" data-filter="reportes" aria-pressed="false" class="chip rounded-full border border-hair px-3 py-1.5 text-[14px] text-ink">Reportes</button>
+        </div>
+      </div>
+
+      <div class="mt-6 overflow-hidden rounded-card border border-hair bg-paper">
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-[14px]">
+            <thead>
+              <tr class="border-b border-hair text-left">
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Empleado</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Cargo</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Programa</th>
+                <th scope="col" class="px-6 py-4 font-medium text-warm">Planilla</th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr data-area="planilla" class="border-b border-hair"><td class="px-6 py-4 text-ink">María Fernanda López</td><td class="px-6 py-4 text-warm">Gerente Administrativo</td><td class="px-6 py-4 text-warm">Administración</td><td class="px-6 py-4"><span class="rounded-full border border-hair px-2 py-0.5 text-[12px] text-ink">Incluido</span></td></tr>
+              <tr data-area="expediente" class="border-b border-hair"><td class="px-6 py-4 text-ink">Carla Sofía Reyes</td><td class="px-6 py-4 text-warm">Asistente de RR.HH.</td><td class="px-6 py-4 text-warm">Administración</td><td class="px-6 py-4"><span class="rounded-full border border-hair px-2 py-0.5 text-[12px] text-warm">Pendiente de cierre</span></td></tr>
+              <tr data-area="planilla" class="border-b border-hair"><td class="px-6 py-4 text-ink">José Antonio Mejía</td><td class="px-6 py-4 text-warm">Coordinador de programa</td><td class="px-6 py-4 text-warm">Programa Juventud</td><td class="px-6 py-4"><span class="rounded-full border border-hair px-2 py-0.5 text-[12px] text-ink">Incluido</span></td></tr>
+              <tr data-area="reportes" class="border-b border-hair"><td class="px-6 py-4 text-ink">Ana Lucía Flores</td><td class="px-6 py-4 text-warm">Facilitadora</td><td class="px-6 py-4 text-warm">Programa Juventud</td><td class="px-6 py-4"><span class="rounded-full border border-hair px-2 py-0.5 text-[12px] text-ink">Incluido</span></td></tr>
+              <tr data-area="planilla"><td class="px-6 py-4 text-ink">Luis Enrique Paz</td><td class="px-6 py-4 text-warm">Técnico de campo</td><td class="px-6 py-4 text-warm">Campo</td><td class="px-6 py-4"><span class="rounded-full border border-hair px-2 py-0.5 text-[12px] text-ink">Incluido</span></td></tr>
+            </tbody>
+          </table>
+          <p id="empty" hidden class="px-6 py-8 text-center text-[14px] text-warm">No hay coincidencias. Cambie el texto o el filtro.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ PIE ============ -->
+  <footer class="border-t border-hair bg-canvas px-6 py-10">
+    <div class="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-4 text-[12px] text-warm">
+      <p>SIGMA · Sistema Integrado de Gestión y Manejo Administrativo</p>
+      <p>Asociación para el Servicio Mundial</p>
+    </div>
+  </footer>
+
+  <style>
+    /* Pestañas en píldora: activa = fondo #1c1917 con texto blanco; inactiva = borde hairline */
+    .tab { border: 1px solid #e8e6e5; color: #0c0a09; background: transparent; }
+    .tab[aria-selected="true"] { background: #1c1917; border-color: #1c1917; color: #ffffff; }
+    .chip[aria-pressed="true"] { background: #1c1917; border-color: #1c1917; color: #ffffff; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid #3ba6f1; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+
+  <script>
+    (function () {
+      // --- Pestañas (patrón WAI-ARIA con flechas) ---
+      const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+      function activate(tab) {
+        tabs.forEach(t => {
+          const on = t === tab;
+          t.setAttribute('aria-selected', on);
+          t.tabIndex = on ? 0 : -1;
+          document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+        });
+        tab.focus();
+      }
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => activate(tab));
+        tab.addEventListener('keydown', e => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            const dir = e.key === 'ArrowRight' ? 1 : -1;
+            activate(tabs[(i + dir + tabs.length) % tabs.length]);
+            e.preventDefault();
+          }
+        });
+      });
+      // Botón "Buscar personal" del encabezado abre su pestaña
+      document.querySelectorAll('[data-goto]').forEach(b =>
+        b.addEventListener('click', () => activate(document.getElementById('t-bus'))));
+
+      // --- Búsqueda y filtro por área (solo visual) ---
+      const chips = Array.from(document.querySelectorAll('.chip'));
+      const rows = Array.from(document.querySelectorAll('#rows tr'));
+      const q = document.getElementById('q');
+      const empty = document.getElementById('empty');
+      let area = 'todos';
+      function apply() {
+        const text = q.value.trim().toLowerCase();
+        let visible = 0;
+        rows.forEach(r => {
+          const ok = (area === 'todos' || r.dataset.area === area) && r.textContent.toLowerCase().includes(text);
+          r.hidden = !ok;
+          if (ok) visible++;
+        });
+        empty.hidden = visible > 0;
+      }
+      chips.forEach(chip => chip.addEventListener('click', () => {
+        area = chip.dataset.filter;
+        chips.forEach(c => c.setAttribute('aria-pressed', c === chip));
+        apply();
+      }));
+      q.addEventListener('input', apply);
+    })();
+  </script>
+</body>
+</html>
